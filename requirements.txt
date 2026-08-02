@@ -1,12 +1,9 @@
 fastapi
 uvicorn
-sentence-transformers
 transformers
 torch
-faiss-cpu
-pymupdf
-langdetect
-rank_bm25
-numpy
+scikit-learn
 pandas
+openpyxl
+numpy
 python-multipart

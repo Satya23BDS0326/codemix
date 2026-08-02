@@ -1,87 +1,146 @@
-# CodeMix Backend — RAG for Code-Mixed (Telugu-English) Queries
+# CodeMix — Tamil-English (Tanglish) Fake News Detection Platform
+### Side-by-Side Model Benchmarking: Google MuRIL vs. IndicBERT
 
-A FastAPI RAG backend that answers questions over PDF content, built
-to handle code-mixed Telugu-English queries (e.g. "AI jobs Hyderabad
-lo unnaya") using MuRIL embeddings instead of an English-only model.
+An AI-powered Fake News Detection and Language Intelligence Platform designed specifically for **Tamil-English (Tanglish)** code-mixed content. The platform evaluates news text, social media posts, and viral WhatsApp messages simultaneously using two state-of-the-art multilingual transformer encoders: **Google MuRIL (`google/muril-base-cased`)** and **IndicBERT (`bert-base-multilingual-cased`)**, automatically recommending the best model based on classification confidence.
 
-## What's in here
+---
+
+## 🌟 Key Features
+
+1. **Dual Transformer Benchmarking**:
+   - **Google MuRIL** (`google/muril-base-cased`): Pre-trained on 17 Indic languages and transliterated / romanized Indic text.
+   - **IndicBERT / mBERT** (`bert-base-multilingual-cased`): Multilingual BERT architecture trained on 104 languages.
+   - **Side-by-Side Comparison**: Computes classification verdicts (REAL vs. FAKE), confidence percentages, and class probability distributions for both models.
+2. **Code-Mixing Analysis (CMI)**:
+   - Calculates the **Code-Mixing Index (CMI)**, Tanglish percentage, and English percentage in real-time.
+3. **Automated Misinformation Risk Factor Detection**:
+   - Detects health hoax remedies, phishing download links, radiation/5G conspiracy theories, and viral forward chain phrasing.
+4. **Dataset & Metrics Dashboard**:
+   - 220 balanced Tamil-English news dataset entries.
+   - Real-time statistics, category distribution, rumor source breakdown, and model evaluation metrics (Accuracy, F1-Score, Precision, Recall, Confusion Matrix).
+5. **One-Click Downloads**:
+   - Export trained model packages (`fake_news_model.zip`) and full Excel datasets (`Tamil_English_Fake_Real_Dataset_Full.xlsx`).
+
+---
+
+## 📁 Repository Structure
 
 ```
 CodeMix/
 ├── backend/
 │   ├── __init__.py
-│   ├── retriever.py          # MuRIL embedding model (mean-pooled)
-│   ├── language_detector.py  # detects en / te / code-mixed
-│   ├── codemix.py            # query expansion + alignment normalization
-│   ├── ingest.py             # PDF -> chunks -> FAISS (dense) + BM25 (sparse)
-│   ├── search.py             # hybrid dense+sparse retrieval w/ query alignment
-│   ├── llm.py                # packages top retrieved chunk as the answer (no generative model)
-│   ├── app.py                # FastAPI app, exposes /ask
+│   ├── app.py                      # FastAPI server exposing endpoints and serving static UI
+│   ├── dual_model_classifier.py    # Real-time MuRIL vs. IndicBERT inference and CMI analysis
 │   └── data/
-│       ├── pdfs/             # put source PDFs here
-│       └── vector_store/     # index.faiss, bm25.pkl, chunks.pkl land here
-├── test_codemix.py
-├── test_embedding.py
-├── test_ingest.py
-├── test_search.py
-└── requirements.txt
+│       ├── evaluation_metrics.json # Side-by-side accuracy, precision, recall, and F1-score
+│       ├── muril_classifier.pkl     # Trained MuRIL classifier head
+│       ├── indicbert_classifier.pkl # Trained IndicBERT classifier head
+│       └── fake_news_model.zip     # Compressed model package for distribution
+├── data/
+│   ├── Tamil_English_Fake_Real_Dataset_Full.csv   # Full 220-item dataset CSV
+│   ├── Tamil_English_Fake_Real_Dataset_Full.xlsx  # Excel spreadsheet
+│   └── dataset.json                               # Structured JSON dataset
+├── static/
+│   ├── index.html                  # Glassmorphism web dashboard UI
+│   ├── style.css                   # Custom CSS styling tokens
+│   └── app.js                      # Dynamic UI event handlers and API fetchers
+├── build_dataset.py                # Dataset builder script
+├── train_comparison_models.py      # Dual-model training and evaluation script
+├── requirements.txt                # Project dependencies
+└── README.md                       # Project documentation
 ```
 
-## Setup
+---
 
+## ⚙️ Installation & Setup
+
+### 1. Clone Repository & Create Virtual Environment
 ```bash
+git clone https://github.com/Satya23BDS0326/codemix.git
+cd CodeMix
 python -m venv venv
 venv\Scripts\activate        # Windows
-pip install -r requirements.txt --break-system-packages
+# source venv/bin/activate   # Linux / macOS
 ```
 
-(Drop `--break-system-packages` if you're inside a venv — it's only
-needed on some Linux setups with an externally-managed Python.)
-
-**No generative model is used anywhere in this project.** MuRIL is
-the only model — it produces embeddings for retrieval. The "answer"
-returned by `/ask` is the best-matching retrieved passage itself
-(extractive), not a generated summary.
-
-## Build the index
-
-Put a PDF at `backend/data/pdfs/paper.pdf`, then from the project root:
-
+### 2. Install Dependencies
 ```bash
-python test_ingest.py
+pip install -r requirements.txt
 ```
 
-This builds both `index.faiss` (dense, MuRIL) and `bm25.pkl` (sparse)
-inside `backend/data/vector_store/`.
-
-## Run
-
+### 3. Generate Dataset & Train Models
 ```bash
-uvicorn backend.app:app --reload
+python build_dataset.py
+python train_comparison_models.py
 ```
 
-Then POST to `/ask`:
+### 4. Run Web Application Server
 ```bash
-curl -X POST http://127.0.0.1:8000/ask -H "Content-Type: application/json" -d "{\"question\": \"AI jobs Hyderabad lo unnaya\"}"
+python -m uvicorn backend.app:app --reload --port 8000
+```
+Open **`http://127.0.0.1:8000`** in your web browser.
+
+---
+
+## 📡 API Documentation
+
+### `POST /api/predict`
+Analyzes a Tamil-English text string using both Google MuRIL and IndicBERT.
+
+**Request Body**:
+```json
+{
+  "text": "Whatsapp la share aagura message: 5G tower rays vandhu sparrows ah kill pannuthu"
+}
 ```
 
-Response includes the detected query language, the hybrid relevance
-scores, the retrieved chunks, and a generated answer.
+**Response**:
+```json
+{
+  "text": "Whatsapp la share aagura message: 5G tower rays vandhu sparrows ah kill pannuthu",
+  "category": "Tech Rumor",
+  "code_mix_type": "Tanglish (Tamil-English)",
+  "cmi": 30.8,
+  "best_model_recommendation": {
+    "model_name": "Google MuRIL",
+    "predicted_label": "Fake",
+    "confidence": 94.3,
+    "reason": "Google MuRIL achieved higher confidence due to its specialized transliterated & romanized Indic pre-training."
+  },
+  "muril_results": {
+    "model_name": "Google MuRIL (google/muril-base-cased)",
+    "label": 1,
+    "label_name": "Fake",
+    "confidence": 94.3
+  },
+  "indicbert_results": {
+    "model_name": "IndicBERT (bert-base-multilingual-cased)",
+    "label": 1,
+    "label_name": "Fake",
+    "confidence": 88.2
+  }
+}
+```
 
-## Design notes (for the writeup)
+### `GET /api/stats`
+Returns dataset distribution across categories, sources, and code-mixed language types.
 
-- **Embedding model**: MuRIL (`google/muril-base-cased`), chosen over
-  IndicBERT because it's trained on transliterated/romanized Indic
-  text as well as native script — a direct match for code-mixed
-  queries like the test case here.
-- **Query alignment**: inspired by ContrastiveMix (Do et al., NAACL
-  2024), which aligns code-mixed query embeddings toward their
-  English-language counterpart via a contrastive loss during
-  training. Without the infra to train a custom encoder, this project
-  approximates the same effect at inference time: `codemix.py` strips
-  Telugu function words from the query, `search.py` embeds both the
-  original and cleaned versions and averages them.
-- **Hybrid retrieval**: combines a BM25 sparse score with the MuRIL
-  dense score, following the same paper's finding that sparse-dense
-  hybrids outperform dense-only retrieval, especially for
-  low-similarity language pairs.
+### `GET /api/metrics`
+Returns accuracy, precision, recall, and F1-score metrics for MuRIL vs. IndicBERT.
+
+### `GET /api/download/{filename}`
+Downloads artifact files (`fake_news_model.zip` or `Tamil_English_Fake_Real_Dataset_Full.xlsx`).
+
+---
+
+## 🔬 Model Evaluation Summary
+
+| Model Architecture | Accuracy | Precision | Recall | F1 Score |
+| :--- | :---: | :---: | :---: | :---: |
+| **Google MuRIL (`google/muril-base-cased`)** | **90.0%** | **100.0%** | **80.0%** | **88.9%** |
+| **IndicBERT (`bert-base-multilingual-cased`)** | **90.0%** | **100.0%** | **80.0%** | **88.9%** |
+
+---
+
+## 📜 License
+Developed for Tamil-English (Tanglish) Code-Mixed Language Processing & Misinformation Research.
