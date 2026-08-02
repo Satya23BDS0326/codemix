@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeMix - Multilingual Fake News Detection & RAG Platform</title>
+    <meta name="description" content="AI-powered Fake News Detection and Hybrid RAG System for Tamil-English (Tanglish) and Telugu-English Code-Mixed Content.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="dark-theme">
+    <div class="app-background">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+    </div>
+
+    <div class="app-container">
+        <!-- Top Header Navigation -->
+        <header class="app-header">
+            <div class="brand-logo">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>CodeMix <span class="badge-tag">AI 2.0</span></h1>
+                    <p>Multilingual Fake News Detector & RAG Intelligence</p>
+                </div>
+            </div>
+
+            <nav class="nav-tabs">
+                <button class="nav-tab active" data-tab="tab-detector">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>Live Detector</span>
+                </button>
+                <button class="nav-tab" data-tab="tab-rag">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i>
+                    <span>CodeMix Search</span>
+                </button>
+                <button class="nav-tab" data-tab="tab-analytics">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Analytics</span>
+                </button>
+                <button class="nav-tab" data-tab="tab-artifacts">
+                    <i class="fa-solid fa-box-archive"></i>
+                    <span>Model & Downloads</span>
+                </button>
+            </nav>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- TAB 1: LIVE DETECTOR -->
+            <section id="tab-detector" class="tab-pane active">
+                <div class="pane-grid">
+                    <div class="card glass-card input-card">
+                        <div class="card-header">
+                            <h2><i class="fa-solid fa-pen-to-square"></i> Input News / Message Text</h2>
+                            <span class="sub-text">Enter text in Tanglish (Tamil-English), Teluglish, or English</span>
+                        </div>
+                        <div class="card-body">
+                            <textarea id="detector-input" placeholder="Type or paste a news headline, WhatsApp message, or social media post here... e.g. 'Whatsapp la share aagura message: 5G tower rays vandhu sparrows ah kill pannuthu'"></textarea>
+                            
+                            <div class="sample-presets">
+                                <span class="presets-label"><i class="fa-solid fa-bolt"></i> Quick Test Presets:</span>
+                                <div class="preset-pills">
+                                    <button class="preset-btn" data-preset="Whatsapp la share aagura message: 5G tower rays vandhu sparrows and birds ah kill pannuthu, immediate ah stop panna solranga.">
+                                        🚨 Tanglish 5G Hoax
+                                    </button>
+                                    <button class="preset-btn" data-preset="TN Government announced tomorrow local holiday for Chennai schools due to heavy rain forecast by IMD.">
+                                        🌧️ TN Rain Holiday (Real)
+                                    </button>
+                                    <button class="preset-btn" data-preset="Intha kashayam kudicha 2 days la COVID and virus fully cure aayidum no need for hospital visit bro.">
+                                        💊 Tanglish COVID Cure (Fake)
+                                    </button>
+                                    <button class="preset-btn" data-preset="ISRO successfully launched the Chandrayaan-3 mission from Sriharikota, historic moment for India.">
+                                        🚀 Chandrayaan Launch (Real)
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="action-bar">
+                                <button id="btn-clear" class="btn btn-secondary">
+                                    <i class="fa-solid fa-eraser"></i> Clear
+                                </button>
+                                <button id="btn-analyze" class="btn btn-primary">
+                                    <i class="fa-solid fa-microchip"></i> Analyze Credibility
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Prediction Result Panel -->
+                    <div class="card glass-card result-card" id="result-container">
+                        <div class="empty-state" id="result-empty">
+                            <i class="fa-solid fa-radar fa-3x"></i>
+                            <h3>Awaiting Text Analysis</h3>
+                            <p>Enter news text on the left or select a sample preset to view real-time credibility analysis and code-mixing breakdown.</p>
+                        </div>
+
+                        <div class="result-content hidden" id="result-details">
+                            <div class="verdict-banner" id="verdict-banner">
+                                <div class="verdict-icon" id="verdict-icon">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                </div>
+                                <div class="verdict-info">
+                                    <span class="verdict-label">Prediction Status</span>
+                                    <h2 id="verdict-title">FAKE NEWS</h2>
+                                    <p id="verdict-subtitle">Confidence Score: 98.4%</p>
+                                </div>
+                                <div class="confidence-gauge">
+                                    <div class="gauge-bar-outer">
+                                        <div class="gauge-bar-inner" id="gauge-fill"></div>
+                                    </div>
+                                    <span class="gauge-text" id="gauge-score">98%</span>
+                                </div>
+                            </div>
+
+                            <div class="metrics-grid">
+                                <div class="metric-box">
+                                    <span class="metric-title"><i class="fa-solid fa-language"></i> Language / Script</span>
+                                    <span class="metric-val" id="res-lang-type">Tanglish</span>
+                                </div>
+                                <div class="metric-box">
+                                    <span class="metric-title"><i class="fa-solid fa-sliders"></i> Code-Mixing Index (CMI)</span>
+                                    <span class="metric-val" id="res-cmi">25.0%</span>
+                                </div>
+                                <div class="metric-box">
+                                    <span class="metric-title"><i class="fa-solid fa-tag"></i> Predicted Category</span>
+                                    <span class="metric-val" id="res-category">Health Misinformation</span>
+                                </div>
+                                <div class="metric-box">
+                                    <span class="metric-title"><i class="fa-solid fa-percentage"></i> Tanglish / English Ratio</span>
+                                    <span class="metric-val" id="res-ratio">20% / 80%</span>
+                                </div>
+                            </div>
+
+                            <div class="analysis-section">
+                                <h3><i class="fa-solid fa-triangle-exclamation text-amber"></i> Triggered Risk Factors</h3>
+                                <ul class="risk-list" id="res-risk-list">
+                                    <li><i class="fa-solid fa-shield-virus"></i> Contains unverified medical remedy claim</li>
+                                </ul>
+                            </div>
+
+                            <div class="analysis-section">
+                                <h3><i class="fa-solid fa-circle-info text-blue"></i> Automated Explanation</h3>
+                                <div class="explanation-box" id="res-explanation">
+                                    Classified as FAKE news with high confidence...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: CODEMIX RAG SEARCH -->
+            <section id="tab-rag" class="tab-pane">
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-magnifying-glass-chart"></i> CodeMix Hybrid RAG Search</h2>
+                        <span class="sub-text">Queries are processed via MuRIL Dense Embeddings + BM25 Sparse Search with Query Alignment</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="search-bar-wrap">
+                            <div class="search-input-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="rag-query-input" placeholder="Ask a question in code-mixed language (e.g., '5G tower sparrows kill panradhu nijama' or 'train timing updates')">
+                            </div>
+                            <button id="btn-rag-search" class="btn btn-primary">
+                                <i class="fa-solid fa-magnifying-glass"></i> Search RAG
+                            </button>
+                        </div>
+
+                        <div class="rag-results-area" id="rag-results">
+                            <div class="empty-state">
+                                <i class="fa-solid fa-book-open-reader fa-3x"></i>
+                                <h3>Query Knowledge Base</h3>
+                                <p>Enter a query in Tamil-English (Tanglish) or English to retrieve relevant dataset records and generate extractive answers.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: ANALYTICS DASHBOARD -->
+            <section id="tab-analytics" class="tab-pane">
+                <div class="analytics-header">
+                    <h2><i class="fa-solid fa-chart-line"></i> Dataset & Language Analytics</h2>
+                    <p>Statistical distribution over 220 Tamil-English and Telugu-English dataset entries</p>
+                </div>
+
+                <div class="stats-cards-grid">
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon icon-purple"><i class="fa-solid fa-database"></i></div>
+                        <div class="stat-details">
+                            <span class="stat-num" id="stat-total">220</span>
+                            <span class="stat-lbl">Total Samples</span>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon icon-rose"><i class="fa-solid fa-ban"></i></div>
+                        <div class="stat-details">
+                            <span class="stat-num" id="stat-fake">110</span>
+                            <span class="stat-lbl">Fake News (50.0%)</span>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon icon-emerald"><i class="fa-solid fa-circle-check"></i></div>
+                        <div class="stat-details">
+                            <span class="stat-num" id="stat-real">110</span>
+                            <span class="stat-lbl">Real News (50.0%)</span>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon icon-cyan"><i class="fa-solid fa-language"></i></div>
+                        <div class="stat-details">
+                            <span class="stat-num">Tanglish</span>
+                            <span class="stat-lbl">Code-Mix Type</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-tags"></i> Distribution by Category</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="bar-chart-list" id="category-chart">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-share-nodes"></i> Rumor Sources & Channels</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="bar-chart-list" id="source-chart">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: MODEL & DOWNLOADS -->
+            <section id="tab-artifacts" class="tab-pane">
+                <div class="pane-grid">
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <h2><i class="fa-solid fa-square-poll-vertical"></i> Model Performance & Metrics</h2>
+                            <span class="sub-text">Evaluated on stratified test set with TF-IDF + Calibrated Classifier</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="metrics-dashboard">
+                                <div class="perf-box">
+                                    <span class="perf-title">Accuracy</span>
+                                    <span class="perf-value" id="metric-acc">100.0%</span>
+                                </div>
+                                <div class="perf-box">
+                                    <span class="perf-title">Precision</span>
+                                    <span class="perf-value" id="metric-prec">100.0%</span>
+                                </div>
+                                <div class="perf-box">
+                                    <span class="perf-title">Recall</span>
+                                    <span class="perf-value" id="metric-rec">100.0%</span>
+                                </div>
+                                <div class="perf-box">
+                                    <span class="perf-title">F1 Score</span>
+                                    <span class="perf-value" id="metric-f1">100.0%</span>
+                                </div>
+                            </div>
+
+                            <div class="cm-display">
+                                <h3>Confusion Matrix</h3>
+                                <div class="cm-table">
+                                    <div class="cm-cell cm-header"></div>
+                                    <div class="cm-cell cm-header">Pred REAL</div>
+                                    <div class="cm-cell cm-header">Pred FAKE</div>
+                                    <div class="cm-cell cm-header">Actual REAL</div>
+                                    <div class="cm-cell cm-val text-emerald">25</div>
+                                    <div class="cm-cell cm-val text-rose">0</div>
+                                    <div class="cm-cell cm-header">Actual FAKE</div>
+                                    <div class="cm-cell cm-val text-rose">0</div>
+                                    <div class="cm-cell cm-val text-emerald">25</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <h2><i class="fa-solid fa-file-zipper"></i> Generated Zip Artifacts</h2>
+                            <span class="sub-text">Download extracted models & datasets as requested</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="downloads-list">
+                                <div class="download-item">
+                                    <div class="download-icon"><i class="fa-solid fa-file-archive"></i></div>
+                                    <div class="download-info">
+                                        <h4>fake_news_model.zip</h4>
+                                        <p>Contains trained classifier, vectorizer, and metrics</p>
+                                    </div>
+                                    <a href="/api/download/fake_news_model.zip" class="btn btn-secondary btn-sm" download>
+                                        <i class="fa-solid fa-download"></i> Download ZIP
+                                    </a>
+                                </div>
+
+                                <div class="download-item">
+                                    <div class="download-icon"><i class="fa-solid fa-database"></i></div>
+                                    <div class="download-info">
+                                        <h4>vector_store.zip</h4>
+                                        <p>Contains FAISS vector index, BM25 pickle, and text chunks</p>
+                                    </div>
+                                    <a href="/api/download/vector_store.zip" class="btn btn-secondary btn-sm" download>
+                                        <i class="fa-solid fa-download"></i> Download ZIP
+                                    </a>
+                                </div>
+
+                                <div class="download-item">
+                                    <div class="download-icon"><i class="fa-solid fa-file-excel"></i></div>
+                                    <div class="download-info">
+                                        <h4>Tamil_English_Fake_Real_Dataset_Full.xlsx</h4>
+                                        <p>Full 220-row Excel dataset spreadsheet</p>
+                                    </div>
+                                    <a href="/api/download/Tamil_English_Fake_Real_Dataset_Full.xlsx" class="btn btn-secondary btn-sm" download>
+                                        <i class="fa-solid fa-file-excel"></i> Download Excel
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+sentence-transformers
+transformers
+torch
+faiss-cpu
+pymupdf
+langdetect
+rank_bm25
+numpy
+pandas
+python-multipart
