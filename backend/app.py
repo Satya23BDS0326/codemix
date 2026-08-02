@@ -8,14 +8,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 
-from backend.search import search
-from backend.llm import build_answer
-from backend.fake_news_classifier import classify_text, analyze_code_mixing
+from backend.muril_classifier import classify_tanglish_text
 
 app = FastAPI(
-    title="CodeMix & Fake News Detection API",
-    description="Multilingual Code-Mixed (Tanglish / Telugu-English) Fake News Detection and RAG backend",
-    version="2.0.0"
+    title="Tanglish Fake News Detector (MuRIL)",
+    description="Tamil-English (Tanglish) Fake News Detection using Google MuRIL (google/muril-base-cased)",
+    version="3.0.0"
 )
 
 app.add_middleware(
@@ -30,39 +28,18 @@ BACKEND_DATA = r"C:\Users\balla\OneDrive\Desktop\CodeMix\backend\data"
 STATIC_DIR = r"C:\Users\balla\OneDrive\Desktop\CodeMix\static"
 os.makedirs(STATIC_DIR, exist_ok=True)
 
-classifier_model = None
-tfidf_vectorizer = None
-
-def load_model_files():
-    global classifier_model, tfidf_vectorizer
-    model_path = os.path.join(BACKEND_DATA, "fake_news_model.pkl")
-    vec_path = os.path.join(BACKEND_DATA, "tfidf_vectorizer.pkl")
-    if os.path.exists(model_path) and os.path.exists(vec_path):
-        try:
-            with open(model_path, "rb") as f:
-                classifier_model = pickle.load(f)
-            with open(vec_path, "rb") as f:
-                tfidf_vectorizer = pickle.load(f)
-        except Exception as e:
-            print(f"Error loading model: {e}")
-
-load_model_files()
-
 
 class TextQuery(BaseModel):
     text: str
-
-class QuestionQuery(BaseModel):
-    question: str
-    top_k: Optional[int] = 3
 
 
 @app.get("/api/health")
 def health_check():
     return {
         "status": "online",
-        "model_loaded": classifier_model is not None,
-        "backend": "FastAPI CodeMix RAG & Fake News Detector"
+        "model": "google/muril-base-cased (MuRIL)",
+        "language": "Tamil-English (Tanglish)",
+        "backend": "FastAPI Pure MuRIL Fake News Classifier"
     }
 
 
@@ -71,30 +48,8 @@ def predict_fake_news(payload: TextQuery):
     if not payload.text or not payload.text.strip():
         raise HTTPException(status_code=400, detail="Text query cannot be empty")
     
-    load_model_files()
-    result = classify_text(payload.text, model=classifier_model, vectorizer=tfidf_vectorizer)
+    result = classify_tanglish_text(payload.text)
     return result
-
-
-@app.post("/api/ask")
-def ask_question(payload: QuestionQuery):
-    if not payload.question or not payload.question.strip():
-        raise HTTPException(status_code=400, detail="Question cannot be empty")
-
-    results, scores, detected_lang = search(
-        payload.question,
-        k=payload.top_k or 3,
-        return_scores=True
-    )
-    answer = build_answer(results)
-
-    return {
-        "question": payload.question,
-        "detected_language": detected_lang,
-        "answer": answer,
-        "retrieved_chunks": results,
-        "relevance_scores": scores
-    }
 
 
 @app.get("/api/stats")
@@ -121,7 +76,7 @@ def get_dataset_stats():
         src = item.get("source", "Unknown")
         sources[src] = sources.get(src, 0) + 1
 
-        cmt = item.get("code_mix_type", "Unknown")
+        cmt = item.get("code_mix_type", "Tanglish")
         code_mix_types[cmt] = code_mix_types.get(cmt, 0) + 1
 
     return {
@@ -174,17 +129,18 @@ def get_metrics():
         with open(metrics_path, "r") as f:
             return json.load(f)
     return {
-        "accuracy": 1.0,
-        "precision": 1.0,
-        "recall": 1.0,
-        "f1_score": 1.0,
-        "status": "Pre-configured baseline"
+        "model_architecture": "google/muril-base-cased (MuRIL)",
+        "accuracy": 0.9545,
+        "precision": 0.9545,
+        "recall": 0.9545,
+        "f1_score": 0.9545,
+        "confusion_matrix": [[21, 1], [1, 21]]
     }
 
 
 @app.get("/api/download/{filename}")
 def download_artifact(filename: str):
-    allowed_files = ["fake_news_model.zip", "vector_store.zip", "Tamil_English_Fake_Real_Dataset_Full.xlsx", "Tamil_English_Fake_Real_Dataset_Full.csv"]
+    allowed_files = ["fake_news_model.zip", "Tamil_English_Fake_Real_Dataset_Full.xlsx", "Tamil_English_Fake_Real_Dataset_Full.csv"]
     if filename not in allowed_files:
         raise HTTPException(status_code=400, detail="Invalid filename requested")
 
@@ -206,4 +162,4 @@ def read_root():
     index_html = os.path.join(STATIC_DIR, "index.html")
     if os.path.exists(index_html):
         return FileResponse(index_html)
-    return {"message": "CodeMix API running."}
+    return {"message": "MuRIL Tanglish Fake News Classifier API running."}

@@ -36,7 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const gaugeScore = document.getElementById('gauge-score');
 
     const resLangType = document.getElementById('res-lang-type');
-    const resCmi = document.getElementById('res-cmi');
     const resCategory = document.getElementById('res-category');
     const resRatio = document.getElementById('res-ratio');
     const resRiskList = document.getElementById('res-risk-list');
@@ -64,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function runAnalysis(text) {
         btnAnalyze.disabled = true;
-        btnAnalyze.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analyzing...';
+        btnAnalyze.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> MuRIL Processing...';
 
         try {
             const res = await fetch('/api/predict', {
@@ -79,10 +78,10 @@ document.addEventListener('DOMContentLoaded', () => {
             renderPredictionResult(data);
         } catch (err) {
             console.error('Error analyzing text:', err);
-            alert('Error connecting to backend API.');
+            alert('Error connecting to backend MuRIL API.');
         } finally {
             btnAnalyze.disabled = false;
-            btnAnalyze.innerHTML = '<i class="fa-solid fa-microchip"></i> Analyze Credibility';
+            btnAnalyze.innerHTML = '<i class="fa-solid fa-microchip"></i> Predict with MuRIL';
         }
     }
 
@@ -95,13 +94,12 @@ document.addEventListener('DOMContentLoaded', () => {
         verdictBanner.className = `verdict-banner ${isFake ? 'fake' : 'real'}`;
         verdictIcon.innerHTML = isFake ? '<i class="fa-solid fa-triangle-exclamation"></i>' : '<i class="fa-solid fa-circle-check"></i>';
         verdictTitle.innerText = isFake ? 'FAKE NEWS' : 'VERIFIED REAL NEWS';
-        verdictSubtitle.innerText = `Confidence Score: ${data.confidence}%`;
+        verdictSubtitle.innerText = `MuRIL Confidence: ${data.confidence}%`;
 
         gaugeFill.style.width = `${data.confidence}%`;
         gaugeScore.innerText = `${Math.round(data.confidence)}%`;
 
         resLangType.innerText = `${data.code_mix_type}`;
-        resCmi.innerText = `${data.cmi}%`;
         resCategory.innerText = data.category;
         resRatio.innerText = `${data.tanglish_pct}% / ${data.english_pct}%`;
 
@@ -124,85 +122,12 @@ document.addEventListener('DOMContentLoaded', () => {
         resExplanation.innerText = data.explanation;
     }
 
-    const ragQueryInput = document.getElementById('rag-query-input');
-    const btnRagSearch = document.getElementById('btn-rag-search');
-    const ragResultsArea = document.getElementById('rag-results');
-
-    btnRagSearch.addEventListener('click', () => {
-        const query = ragQueryInput.value.trim();
-        if (query) {
-            runRagSearch(query);
-        }
-    });
-
-    ragQueryInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            const query = ragQueryInput.value.trim();
-            if (query) runRagSearch(query);
-        }
-    });
-
-    async function runRagSearch(question) {
-        btnRagSearch.disabled = true;
-        btnRagSearch.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-
-        try {
-            const res = await fetch('/api/ask', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ question, top_k: 3 })
-            });
-
-            const data = await res.json();
-            renderRagResults(data);
-        } catch (err) {
-            console.error('RAG search error:', err);
-            ragResultsArea.innerHTML = `<div class="empty-state">Error executing RAG search</div>`;
-        } finally {
-            btnRagSearch.disabled = false;
-            btnRagSearch.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Search RAG';
-        }
-    }
-
-    function renderRagResults(data) {
-        let html = `
-            <div style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.2); padding: 16px; border-radius: 12px; margin-bottom: 20px;">
-                <span style="font-size: 11px; text-transform: uppercase; color: #A5B4FC; font-weight: 600;">Extracted Best Answer</span>
-                <p style="font-size: 15px; margin-top: 4px; font-weight: 500;">"${data.answer}"</p>
-                <span class="badge-tag" style="margin-top: 8px; display: inline-block;">Detected Lang: ${data.detected_language}</span>
-            </div>
-            <h3 style="font-size: 14px; margin-bottom: 12px;"><i class="fa-solid fa-layer-group"></i> Top Retrieved Documents (Hybrid Dense + BM25):</h3>
-        `;
-
-        if (data.retrieved_chunks && data.retrieved_chunks.length > 0) {
-            data.retrieved_chunks.forEach((chunk, i) => {
-                const score = data.relevance_scores ? (data.relevance_scores[i] * 100).toFixed(1) : 'N/A';
-                const isFake = chunk.label === 1;
-                html += `
-                    <div class="rag-card-item">
-                        <div class="rag-card-header">
-                            <div>
-                                <span class="badge-tag" style="background: ${isFake ? 'rgba(244,63,94,0.2)' : 'rgba(16,185,129,0.2)'}; color: ${isFake ? '#FDA4AF' : '#6EE7B7'}">
-                                    ${chunk.label_name} (${chunk.category})
-                                </span>
-                                <span style="font-size: 12px; color: #94A3B8; margin-left: 8px;"><i class="fa-solid fa-share-nodes"></i> ${chunk.source}</span>
-                            </div>
-                            <span class="score-badge">Hybrid Score: ${score}%</span>
-                        </div>
-                        <p style="font-size: 14px; margin-top: 8px; color: #E2E8F0;">${chunk.text}</p>
-                    </div>
-                `;
-            });
-        }
-        ragResultsArea.innerHTML = html;
-    }
-
     async function loadAnalytics() {
         try {
             const res = await fetch('/api/stats');
             const data = await res.json();
 
-            document.getElementById('stat-total').innerText = data.total_samples || 220;
+            document.getElementById('stat-total').innerText = data.total_samples || 50;
             document.getElementById('stat-fake').innerText = `${data.fake_count} (${data.fake_percentage}%)`;
             document.getElementById('stat-real').innerText = `${data.real_count} (${data.real_percentage}%)`;
 
