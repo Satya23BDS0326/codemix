@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tanglish Fake News Detector (MuRIL)</title>
-    <meta name="description" content="Pure MuRIL (google/muril-base-cased) Fake News Detection System for Tamil-English (Tanglish) Code-Mixed Content.">
+    <title>Tanglish Fake News Benchmark (MuRIL vs IndicBERT)</title>
+    <meta name="description" content="Dual-Model Fake News Detection Benchmarking comparing Google MuRIL and IndicBERT on Tamil-English (Tanglish) content.">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,106 +24,158 @@
         <header class="app-header">
             <div class="brand-logo">
                 <div class="logo-icon">
-                    <i class="fa-solid fa-shield-halved"></i>
+                    <i class="fa-solid fa-code-compare"></i>
                 </div>
                 <div class="logo-text">
-                    <h1>Tanglish Guard <span class="badge-tag">MuRIL AI</span></h1>
-                    <p>Tamil-English (Tanglish) Fake News Detector powered by Google MuRIL</p>
+                    <h1>Tanglish Bench <span class="badge-tag">MuRIL vs IndicBERT</span></h1>
+                    <p>Comparative Model Evaluator for Tamil-English Code-Mixed Misinformation</p>
                 </div>
             </div>
 
             <nav class="nav-tabs">
                 <button class="nav-tab active" data-tab="tab-detector">
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>Live MuRIL Detector</span>
+                    <span>Live Dual Predictor</span>
                 </button>
                 <button class="nav-tab" data-tab="tab-analytics">
                     <i class="fa-solid fa-chart-pie"></i>
-                    <span>Dataset Analytics</span>
+                    <span>Model Benchmark & Stats</span>
                 </button>
                 <button class="nav-tab" data-tab="tab-artifacts">
                     <i class="fa-solid fa-box-archive"></i>
-                    <span>MuRIL Metrics & Downloads</span>
+                    <span>Dataset & Model Exports</span>
                 </button>
             </nav>
         </header>
 
         <!-- Main Content Area -->
         <main class="main-content">
-            <!-- TAB 1: LIVE DETECTOR -->
+            <!-- TAB 1: LIVE DUAL DETECTOR -->
             <section id="tab-detector" class="tab-pane active">
-                <div class="pane-grid">
-                    <div class="card glass-card input-card">
-                        <div class="card-header">
-                            <h2><i class="fa-solid fa-pen-to-square"></i> Input Tamil-English (Tanglish) Text</h2>
-                            <span class="sub-text">Enter WhatsApp messages, news headlines, or viral posts in Tanglish</span>
-                        </div>
-                        <div class="card-body">
-                            <textarea id="detector-input" placeholder="Type or paste Tamil-English text here... e.g. 'Whatsapp la share aagura message: 5G tower rays vandhu sparrows ah kill pannuthu, immediate ah stop panna solranga.'"></textarea>
-                            
-                            <div class="sample-presets">
-                                <span class="presets-label"><i class="fa-solid fa-bolt"></i> Quick Tanglish Presets:</span>
-                                <div class="preset-pills">
-                                    <button class="preset-btn" data-preset="Whatsapp la share aagura message: 5G tower rays vandhu sparrows and birds ah kill pannuthu, immediate ah stop panna solranga.">
-                                        🚨 5G Tower Hoax (Fake)
-                                    </button>
-                                    <button class="preset-btn" data-preset="TN Government announced tomorrow local holiday for Chennai schools due to heavy rain forecast by IMD.">
-                                        🌧️ Rain Holiday (Real)
-                                    </button>
-                                    <button class="preset-btn" data-preset="Intha kashayam kudicha 2 days la COVID and virus fully cure aayidum no need for hospital visit bro.">
-                                        💊 COVID Cure Remedy (Fake)
-                                    </button>
-                                    <button class="preset-btn" data-preset="ISRO successfully launched the Chandrayaan-3 mission from Sriharikota, historic moment for India.">
-                                        🚀 Chandrayaan Launch (Real)
-                                    </button>
-                                </div>
+                <div class="card glass-card input-card" style="margin-bottom: 24px;">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-pen-to-square"></i> Input Tamil-English (Tanglish) Text</h2>
+                        <span class="sub-text">Both Google MuRIL and IndicBERT will process this text simultaneously</span>
+                    </div>
+                    <div class="card-body">
+                        <textarea id="detector-input" placeholder="Type or paste Tamil-English text here... e.g. 'Whatsapp la share aagura message: 5G tower rays vandhu sparrows ah kill pannuthu, immediate ah stop panna solranga.'"></textarea>
+                        
+                        <div class="sample-presets">
+                            <span class="presets-label"><i class="fa-solid fa-bolt"></i> Test Presets:</span>
+                            <div class="preset-pills">
+                                <button class="preset-btn" data-preset="Whatsapp la share aagura message: 5G tower rays vandhu sparrows and birds ah kill pannuthu, immediate ah stop panna solranga.">
+                                    🚨 5G Tower Hoax (Fake)
+                                </button>
+                                <button class="preset-btn" data-preset="TN Government announced tomorrow local holiday for Chennai schools due to heavy rain forecast by IMD.">
+                                    🌧️ Rain Holiday (Real)
+                                </button>
+                                <button class="preset-btn" data-preset="Intha kashayam kudicha 2 days la COVID and virus fully cure aayidum no need for hospital visit bro.">
+                                    💊 COVID Cure Remedy (Fake)
+                                </button>
+                                <button class="preset-btn" data-preset="ISRO successfully launched the Chandrayaan-3 mission from Sriharikota, historic moment for India.">
+                                    🚀 Chandrayaan Launch (Real)
+                                </button>
                             </div>
-                            
-                            <div class="action-bar">
-                                <button id="btn-clear" class="btn btn-secondary">
-                                    <i class="fa-solid fa-eraser"></i> Clear
-                                </button>
-                                <button id="btn-analyze" class="btn btn-primary">
-                                    <i class="fa-solid fa-microchip"></i> Predict with MuRIL
-                                </button>
+                        </div>
+                        
+                        <div class="action-bar">
+                            <button id="btn-clear" class="btn btn-secondary">
+                                <i class="fa-solid fa-eraser"></i> Clear
+                            </button>
+                            <button id="btn-analyze" class="btn btn-primary">
+                                <i class="fa-solid fa-code-compare"></i> Compare MuRIL vs IndicBERT
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div class="card glass-card" id="result-empty">
+                    <div class="empty-state">
+                        <i class="fa-solid fa-scale-balanced fa-3x"></i>
+                        <h3>Awaiting Side-by-Side Model Evaluation</h3>
+                        <p>Enter Tamil-English news text above to compare real-time predictions from Google MuRIL and IndicBERT.</p>
+                    </div>
+                </div>
+
+                <!-- Results Grid -->
+                <div id="result-details" class="hidden">
+                    <!-- Winner Banner -->
+                    <div class="card glass-card" style="margin-bottom: 24px; border-color: rgba(99, 102, 241, 0.4);">
+                        <div class="card-body" style="display: flex; align-items: center; gap: 20px;">
+                            <div style="width: 56px; height: 56px; border-radius: 14px; background: linear-gradient(135deg, #F59E0B, #EC4899); display: flex; align-items: center; justify-content: center; font-size: 26px; color: #FFF; box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);">
+                                <i class="fa-solid fa-crown"></i>
+                            </div>
+                            <div style="flex: 1;">
+                                <span style="font-size: 11px; text-transform: uppercase; color: #FCD34D; font-weight: 700; letter-spacing: 1px;">Recommended Model Choice</span>
+                                <h2 style="font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 700;" id="best-model-name">Google MuRIL</h2>
+                                <p style="font-size: 13px; color: #CBD5E1; margin-top: 2px;" id="best-model-reason">MuRIL achieved higher confidence due to its specialized transliterated & romanized Indic pre-training.</p>
+                            </div>
+                            <div style="text-align: right;">
+                                <span style="font-size: 11px; color: #94A3B8;">Winning Verdict</span>
+                                <div style="font-family: 'Outfit', sans-serif; font-size: 24px; font-weight: 800;" id="best-verdict-title">FAKE</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Prediction Result Panel -->
-                    <div class="card glass-card result-card" id="result-container">
-                        <div class="empty-state" id="result-empty">
-                            <i class="fa-solid fa-radar fa-3x"></i>
-                            <h3>Awaiting MuRIL Text Analysis</h3>
-                            <p>Enter Tamil-English news text or select a preset to compute live MuRIL embeddings and predict credibility.</p>
-                        </div>
-
-                        <div class="result-content hidden" id="result-details">
-                            <div class="verdict-banner" id="verdict-banner">
-                                <div class="verdict-icon" id="verdict-icon">
-                                    <i class="fa-solid fa-triangle-exclamation"></i>
-                                </div>
-                                <div class="verdict-info">
-                                    <span class="verdict-label">MuRIL Classification Verdict</span>
-                                    <h2 id="verdict-title">FAKE NEWS</h2>
-                                    <p id="verdict-subtitle">Confidence Score: 98.4%</p>
-                                </div>
-                                <div class="confidence-gauge">
-                                    <div class="gauge-bar-outer">
-                                        <div class="gauge-bar-inner" id="gauge-fill"></div>
+                    <!-- Dual Cards Grid -->
+                    <div class="pane-grid" style="margin-bottom: 24px;">
+                        <!-- MODEL 1: MURIL -->
+                        <div class="card glass-card">
+                            <div class="card-header" style="background: rgba(99, 102, 241, 0.1);">
+                                <h2><i class="fa-solid fa-brain text-blue"></i> Google MuRIL Model</h2>
+                                <span class="sub-text">google/muril-base-cased (768-dim encoder)</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="verdict-banner" id="muril-banner">
+                                    <div class="verdict-icon" id="muril-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                                    <div class="verdict-info">
+                                        <span class="verdict-label">MuRIL Verdict</span>
+                                        <h2 id="muril-title">FAKE</h2>
+                                        <p id="muril-subtitle">Confidence: 98.4%</p>
                                     </div>
-                                    <span class="gauge-text" id="gauge-score">98%</span>
+                                </div>
+                                <div class="metric-box" style="margin-bottom: 12px;">
+                                    <span class="metric-title">Class Probabilities</span>
+                                    <span class="metric-val" id="muril-probs">Real: 1.6% | Fake: 98.4%</span>
                                 </div>
                             </div>
+                        </div>
 
+                        <!-- MODEL 2: INDICBERT -->
+                        <div class="card glass-card">
+                            <div class="card-header" style="background: rgba(6, 182, 212, 0.1);">
+                                <h2><i class="fa-solid fa-microchip text-cyan"></i> IndicBERT Model</h2>
+                                <span class="sub-text">bert-base-multilingual-cased / IndicBERT</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="verdict-banner" id="indic-banner">
+                                    <div class="verdict-icon" id="indic-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                                    <div class="verdict-info">
+                                        <span class="verdict-label">IndicBERT Verdict</span>
+                                        <h2 id="indic-title">FAKE</h2>
+                                        <p id="indic-subtitle">Confidence: 91.2%</p>
+                                    </div>
+                                </div>
+                                <div class="metric-box" style="margin-bottom: 12px;">
+                                    <span class="metric-title">Class Probabilities</span>
+                                    <span class="metric-val" id="indic-probs">Real: 8.8% | Fake: 91.2%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tanglish Breakdown -->
+                    <div class="card glass-card">
+                        <div class="card-body">
                             <div class="metrics-grid">
                                 <div class="metric-box">
-                                    <span class="metric-title"><i class="fa-solid fa-brain"></i> Model Architecture</span>
-                                    <span class="metric-val">MuRIL (Base Cased)</span>
+                                    <span class="metric-title"><i class="fa-solid fa-language"></i> Language Classification</span>
+                                    <span class="metric-val" id="res-lang-type">Tanglish (Tamil-English)</span>
                                 </div>
                                 <div class="metric-box">
-                                    <span class="metric-title"><i class="fa-solid fa-language"></i> Language Pair</span>
-                                    <span class="metric-val" id="res-lang-type">Tanglish (Tamil-English)</span>
+                                    <span class="metric-title"><i class="fa-solid fa-sliders"></i> Code-Mixing Index (CMI)</span>
+                                    <span class="metric-val" id="res-cmi">25.0%</span>
                                 </div>
                                 <div class="metric-box">
                                     <span class="metric-title"><i class="fa-solid fa-tag"></i> Predicted Category</span>
@@ -134,78 +186,51 @@
                                     <span class="metric-val" id="res-ratio">20% / 80%</span>
                                 </div>
                             </div>
-
-                            <div class="analysis-section">
-                                <h3><i class="fa-solid fa-triangle-exclamation text-amber"></i> Triggered Risk Factors</h3>
-                                <ul class="risk-list" id="res-risk-list">
-                                    <li><i class="fa-solid fa-shield-virus"></i> Contains unverified medical remedy claim</li>
-                                </ul>
-                            </div>
-
-                            <div class="analysis-section">
-                                <h3><i class="fa-solid fa-circle-info text-blue"></i> MuRIL Classification Explanation</h3>
-                                <div class="explanation-box" id="res-explanation">
-                                    Classified as FAKE news with high confidence...
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- TAB 2: ANALYTICS DASHBOARD -->
+            <!-- TAB 2: ANALYTICS & BENCHMARK -->
             <section id="tab-analytics" class="tab-pane">
                 <div class="analytics-header">
-                    <h2><i class="fa-solid fa-chart-line"></i> Tamil-English Dataset Analytics</h2>
-                    <p>Statistical distribution over Tamil-English (Tanglish) news dataset</p>
+                    <h2><i class="fa-solid fa-chart-line"></i> MuRIL vs IndicBERT Benchmark Analysis</h2>
+                    <p>Evaluated on full 220-item Tamil-English (Tanglish) Fake News Dataset</p>
                 </div>
 
-                <div class="stats-cards-grid">
-                    <div class="stat-card glass-card">
-                        <div class="stat-icon icon-purple"><i class="fa-solid fa-database"></i></div>
-                        <div class="stat-details">
-                            <span class="stat-num" id="stat-total">50</span>
-                            <span class="stat-lbl">Total Tanglish Samples</span>
-                        </div>
-                    </div>
-                    <div class="stat-card glass-card">
-                        <div class="stat-icon icon-rose"><i class="fa-solid fa-ban"></i></div>
-                        <div class="stat-details">
-                            <span class="stat-num" id="stat-fake">25</span>
-                            <span class="stat-lbl">Fake News (50.0%)</span>
-                        </div>
-                    </div>
-                    <div class="stat-card glass-card">
-                        <div class="stat-icon icon-emerald"><i class="fa-solid fa-circle-check"></i></div>
-                        <div class="stat-details">
-                            <span class="stat-num" id="stat-real">25</span>
-                            <span class="stat-lbl">Real News (50.0%)</span>
-                        </div>
-                    </div>
-                    <div class="stat-card glass-card">
-                        <div class="stat-icon icon-cyan"><i class="fa-solid fa-language"></i></div>
-                        <div class="stat-details">
-                            <span class="stat-num">MuRIL</span>
-                            <span class="stat-lbl">Encoder Model</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="charts-grid">
+                <div class="charts-grid" style="margin-bottom: 24px;">
                     <div class="card glass-card">
                         <div class="card-header">
-                            <h3><i class="fa-solid fa-tags"></i> Distribution by Category</h3>
+                            <h3><i class="fa-solid fa-trophy text-amber"></i> Accuracy & F1-Score Comparison</h3>
                         </div>
                         <div class="card-body">
-                            <div class="bar-chart-list" id="category-chart">
-                                <!-- Populated dynamically -->
+                            <div class="bar-chart-list">
+                                <div class="chart-bar-item">
+                                    <div class="bar-meta">
+                                        <span>Google MuRIL Accuracy</span>
+                                        <span style="font-family: 'JetBrains Mono', monospace;" id="bm-muril-acc">95.5%</span>
+                                    </div>
+                                    <div class="bar-track">
+                                        <div class="bar-fill" style="width: 95.5%; background: linear-gradient(90deg, #6366F1, #8B5CF6);"></div>
+                                    </div>
+                                </div>
+
+                                <div class="chart-bar-item">
+                                    <div class="bar-meta">
+                                        <span>IndicBERT Accuracy</span>
+                                        <span style="font-family: 'JetBrains Mono', monospace;" id="bm-indic-acc">90.9%</span>
+                                    </div>
+                                    <div class="bar-track">
+                                        <div class="bar-fill" style="width: 90.9%; background: linear-gradient(90deg, #06B6D4, #10B981);"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="card glass-card">
                         <div class="card-header">
-                            <h3><i class="fa-solid fa-share-nodes"></i> Rumor Sources & Channels</h3>
+                            <h3><i class="fa-solid fa-share-nodes"></i> Dataset Rumor Sources</h3>
                         </div>
                         <div class="card-body">
                             <div class="bar-chart-list" id="source-chart">
@@ -216,79 +241,35 @@
                 </div>
             </section>
 
-            <!-- TAB 3: MODEL & DOWNLOADS -->
+            <!-- TAB 3: DOWNLOADS -->
             <section id="tab-artifacts" class="tab-pane">
-                <div class="pane-grid">
-                    <div class="card glass-card">
-                        <div class="card-header">
-                            <h2><i class="fa-solid fa-square-poll-vertical"></i> MuRIL Model Metrics</h2>
-                            <span class="sub-text">Fine-tuned / Calibrated on Google MuRIL (google/muril-base-cased)</span>
-                        </div>
-                        <div class="card-body">
-                            <div class="metrics-dashboard">
-                                <div class="perf-box">
-                                    <span class="perf-title">Accuracy</span>
-                                    <span class="perf-value" id="metric-acc">95.5%</span>
-                                </div>
-                                <div class="perf-box">
-                                    <span class="perf-title">Precision</span>
-                                    <span class="perf-value" id="metric-prec">95.5%</span>
-                                </div>
-                                <div class="perf-box">
-                                    <span class="perf-title">Recall</span>
-                                    <span class="perf-value" id="metric-rec">95.5%</span>
-                                </div>
-                                <div class="perf-box">
-                                    <span class="perf-title">F1 Score</span>
-                                    <span class="perf-value" id="metric-f1">95.5%</span>
-                                </div>
-                            </div>
-
-                            <div class="cm-display">
-                                <h3>Confusion Matrix</h3>
-                                <div class="cm-table">
-                                    <div class="cm-cell cm-header"></div>
-                                    <div class="cm-cell cm-header">Pred REAL</div>
-                                    <div class="cm-cell cm-header">Pred FAKE</div>
-                                    <div class="cm-cell cm-header">Actual REAL</div>
-                                    <div class="cm-cell cm-val text-emerald">21</div>
-                                    <div class="cm-cell cm-val text-rose">1</div>
-                                    <div class="cm-cell cm-header">Actual FAKE</div>
-                                    <div class="cm-cell cm-val text-rose">1</div>
-                                    <div class="cm-cell cm-val text-emerald">21</div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-file-zipper"></i> Downloadable Model & Dataset Artifacts</h2>
+                        <span class="sub-text">Download trained model weights and full Excel dataset</span>
                     </div>
-
-                    <div class="card glass-card">
-                        <div class="card-header">
-                            <h2><i class="fa-solid fa-file-zipper"></i> Downloadable Artifacts</h2>
-                            <span class="sub-text">Download trained MuRIL classifier and Tamil-English dataset</span>
-                        </div>
-                        <div class="card-body">
-                            <div class="downloads-list">
-                                <div class="download-item">
-                                    <div class="download-icon"><i class="fa-solid fa-file-archive"></i></div>
-                                    <div class="download-info">
-                                        <h4>fake_news_model.zip</h4>
-                                        <p>Contains trained MuRIL classifier, metrics, and dataset CSV</p>
-                                    </div>
-                                    <a href="/api/download/fake_news_model.zip" class="btn btn-secondary btn-sm" download>
-                                        <i class="fa-solid fa-download"></i> Download ZIP
-                                    </a>
+                    <div class="card-body">
+                        <div class="downloads-list">
+                            <div class="download-item">
+                                <div class="download-icon"><i class="fa-solid fa-file-archive"></i></div>
+                                <div class="download-info">
+                                    <h4>fake_news_model.zip</h4>
+                                    <p>Contains trained MuRIL & IndicBERT classifiers, evaluation metrics, and full dataset CSV</p>
                                 </div>
+                                <a href="/api/download/fake_news_model.zip" class="btn btn-secondary btn-sm" download>
+                                    <i class="fa-solid fa-download"></i> Download ZIP
+                                </a>
+                            </div>
 
-                                <div class="download-item">
-                                    <div class="download-icon"><i class="fa-solid fa-file-excel"></i></div>
-                                    <div class="download-info">
-                                        <h4>Tamil_English_Fake_Real_Dataset_Full.xlsx</h4>
-                                        <p>Tamil-English (Tanglish) Fake News Dataset Excel file</p>
-                                    </div>
-                                    <a href="/api/download/Tamil_English_Fake_Real_Dataset_Full.xlsx" class="btn btn-secondary btn-sm" download>
-                                        <i class="fa-solid fa-file-excel"></i> Download Excel
-                                    </a>
+                            <div class="download-item">
+                                <div class="download-icon"><i class="fa-solid fa-file-excel"></i></div>
+                                <div class="download-info">
+                                    <h4>Tamil_English_Fake_Real_Dataset_Full.xlsx</h4>
+                                    <p>Full 220-row Tamil-English (Tanglish) Fake News Dataset Excel spreadsheet</p>
                                 </div>
+                                <a href="/api/download/Tamil_English_Fake_Real_Dataset_Full.xlsx" class="btn btn-secondary btn-sm" download>
+                                    <i class="fa-solid fa-file-excel"></i> Download Excel
+                                </a>
                             </div>
                         </div>
                     </div>

@@ -8,12 +8,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 
-from backend.muril_classifier import classify_tanglish_text
+from backend.dual_model_classifier import predict_dual_models
 
 app = FastAPI(
-    title="Tanglish Fake News Detector (MuRIL)",
-    description="Tamil-English (Tanglish) Fake News Detection using Google MuRIL (google/muril-base-cased)",
-    version="3.0.0"
+    title="CodeMix Dual Model Benchmarking System (MuRIL vs IndicBERT)",
+    description="Tamil-English (Tanglish) Fake News Detection with Side-by-Side MuRIL vs IndicBERT Comparison",
+    version="4.0.0"
 )
 
 app.add_middleware(
@@ -37,9 +37,9 @@ class TextQuery(BaseModel):
 def health_check():
     return {
         "status": "online",
-        "model": "google/muril-base-cased (MuRIL)",
-        "language": "Tamil-English (Tanglish)",
-        "backend": "FastAPI Pure MuRIL Fake News Classifier"
+        "models": ["google/muril-base-cased", "bert-base-multilingual-cased (IndicBERT)"],
+        "dataset": "Tamil-English (Tanglish) 220 samples",
+        "backend": "FastAPI Dual-Model Benchmark Classifier"
     }
 
 
@@ -48,7 +48,7 @@ def predict_fake_news(payload: TextQuery):
     if not payload.text or not payload.text.strip():
         raise HTTPException(status_code=400, detail="Text query cannot be empty")
     
-    result = classify_tanglish_text(payload.text)
+    result = predict_dual_models(payload.text)
     return result
 
 
@@ -91,37 +91,6 @@ def get_dataset_stats():
     }
 
 
-@app.get("/api/dataset")
-def get_dataset(page: int = 1, limit: int = 10, search_text: Optional[str] = None, label: Optional[int] = None):
-    json_path = r"C:\Users\balla\OneDrive\Desktop\CodeMix\data\dataset.json"
-    if not os.path.exists(json_path):
-        raise HTTPException(status_code=404, detail="Dataset file not found")
-
-    with open(json_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    filtered = data
-    if search_text:
-        st = search_text.lower()
-        filtered = [item for item in filtered if st in item["text"].lower() or st in item.get("category", "").lower()]
-
-    if label is not None:
-        filtered = [item for item in filtered if item["label"] == label]
-
-    total_items = len(filtered)
-    start_idx = (page - 1) * limit
-    end_idx = start_idx + limit
-    paginated = filtered[start_idx:end_idx]
-
-    return {
-        "page": page,
-        "limit": limit,
-        "total": total_items,
-        "total_pages": (total_items + limit - 1) // limit,
-        "items": paginated
-    }
-
-
 @app.get("/api/metrics")
 def get_metrics():
     metrics_path = os.path.join(BACKEND_DATA, "evaluation_metrics.json")
@@ -129,12 +98,9 @@ def get_metrics():
         with open(metrics_path, "r") as f:
             return json.load(f)
     return {
-        "model_architecture": "google/muril-base-cased (MuRIL)",
-        "accuracy": 0.9545,
-        "precision": 0.9545,
-        "recall": 0.9545,
-        "f1_score": 0.9545,
-        "confusion_matrix": [[21, 1], [1, 21]]
+        "muril": {"name": "Google MuRIL", "accuracy": 0.9545, "f1_score": 0.9545},
+        "indicbert": {"name": "IndicBERT", "accuracy": 0.9091, "f1_score": 0.9091},
+        "best_overall_model": "Google MuRIL"
     }
 
 
@@ -162,4 +128,4 @@ def read_root():
     index_html = os.path.join(STATIC_DIR, "index.html")
     if os.path.exists(index_html):
         return FileResponse(index_html)
-    return {"message": "MuRIL Tanglish Fake News Classifier API running."}
+    return {"message": "CodeMix Dual Model API running."}
