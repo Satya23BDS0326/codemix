@@ -10,33 +10,37 @@ BACKEND_DATA = r"C:\Users\balla\OneDrive\Desktop\CodeMix\backend\data"
 MURIL_NAME = "google/muril-base-cased"
 INDIC_NAME = "bert-base-multilingual-cased"
 
-print("Loading Google MuRIL Encoder...", flush=True)
-muril_tok = AutoTokenizer.from_pretrained(MURIL_NAME)
-muril_mod = AutoModel.from_pretrained(MURIL_NAME)
-muril_mod.eval()
-
-print("Loading IndicBERT Encoder...", flush=True)
-indic_tok = AutoTokenizer.from_pretrained(INDIC_NAME)
-indic_mod = AutoModel.from_pretrained(INDIC_NAME)
-indic_mod.eval()
-
-# Load trained classifiers
+muril_tok = None
+muril_mod = None
+indic_tok = None
+indic_mod = None
 clf_muril = None
 clf_indic = None
 
-muril_clf_path = os.path.join(BACKEND_DATA, "muril_classifier.pkl")
-indic_clf_path = os.path.join(BACKEND_DATA, "indicbert_classifier.pkl")
+def init_models():
+    global muril_tok, muril_mod, indic_tok, indic_mod, clf_muril, clf_indic
+    if muril_tok is None:
+        print("Loading MuRIL Encoder...", flush=True)
+        muril_tok = AutoTokenizer.from_pretrained(MURIL_NAME)
+        muril_mod = AutoModel.from_pretrained(MURIL_NAME)
+        muril_mod.eval()
 
-def load_classifiers():
-    global clf_muril, clf_indic
-    if os.path.exists(muril_clf_path):
+    if indic_tok is None:
+        print("Loading IndicBERT Encoder...", flush=True)
+        indic_tok = AutoTokenizer.from_pretrained(INDIC_NAME)
+        indic_mod = AutoModel.from_pretrained(INDIC_NAME)
+        indic_mod.eval()
+
+    muril_clf_path = os.path.join(BACKEND_DATA, "muril_classifier.pkl")
+    indic_clf_path = os.path.join(BACKEND_DATA, "indicbert_classifier.pkl")
+
+    if clf_muril is None and os.path.exists(muril_clf_path):
         with open(muril_clf_path, "rb") as f:
             clf_muril = pickle.load(f)
-    if os.path.exists(indic_clf_path):
+
+    if clf_indic is None and os.path.exists(indic_clf_path):
         with open(indic_clf_path, "rb") as f:
             clf_indic = pickle.load(f)
-
-load_classifiers()
 
 TANGLISH_MARKERS = {
     "aagum", "pannuthu", "kudicha", "varudho", "ungalu", "ungaluku", "panranga",
@@ -70,6 +74,7 @@ def mean_pooling(model_output, attention_mask):
     return summed / counts
 
 def get_muril_emb(text: str) -> np.ndarray:
+    init_models()
     inputs = muril_tok(text, padding=True, truncation=True, max_length=128, return_tensors="pt")
     with torch.no_grad():
         output = muril_mod(**inputs)
@@ -77,6 +82,7 @@ def get_muril_emb(text: str) -> np.ndarray:
     return emb[0].cpu().numpy()
 
 def get_indic_emb(text: str) -> np.ndarray:
+    init_models()
     inputs = indic_tok(text, padding=True, truncation=True, max_length=128, return_tensors="pt")
     with torch.no_grad():
         output = indic_mod(**inputs)
@@ -149,7 +155,7 @@ def get_risk_factors(text: str, is_fake: bool) -> tuple[List[str], str]:
     return risks, category
 
 def predict_dual_models(text: str) -> Dict[str, Any]:
-    load_classifiers()
+    init_models()
 
     emb_muril = get_muril_emb(text)
     emb_indic = get_indic_emb(text)
