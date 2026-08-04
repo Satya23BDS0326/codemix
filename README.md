@@ -141,6 +141,3 @@ Downloads artifact files (`fake_news_model.zip` or `Tamil_English_Fake_Real_Data
 | **IndicBERT (`bert-base-multilingual-cased`)** | **90.0%** | **100.0%** | **80.0%** | **88.9%** |
 
 ---
-
-## 📜 License
-Developed for Tamil-English (Tanglish) Code-Mixed Language Processing & Misinformation Research.
