@@ -1,14 +1,21 @@
 import os
+import sys
 import pickle
 import json
+
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
-
-from backend.dual_model_classifier import predict_dual_models
 
 app = FastAPI(
     title="CodeMix Dual Model Benchmarking System (MuRIL vs IndicBERT)",
@@ -24,14 +31,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-BACKEND_DATA = r"C:\Users\balla\OneDrive\Desktop\CodeMix\backend\data"
-STATIC_DIR = r"C:\Users\balla\OneDrive\Desktop\CodeMix\static"
-os.makedirs(STATIC_DIR, exist_ok=True)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BACKEND_DATA = os.path.join(BASE_DIR, "backend", "data")
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+DATA_DIR = os.path.join(BASE_DIR, "data")
 
+os.makedirs(STATIC_DIR, exist_ok=True)
+os.makedirs(BACKEND_DATA, exist_ok=True)
+os.makedirs(DATA_DIR, exist_ok=True)
 
 class TextQuery(BaseModel):
     text: str
-
 
 @app.get("/api/health")
 def health_check():
@@ -42,21 +52,24 @@ def health_check():
         "backend": "FastAPI Dual-Model Benchmark Classifier"
     }
 
-
 @app.post("/api/predict")
 def predict_fake_news(payload: TextQuery):
     if not payload.text or not payload.text.strip():
         raise HTTPException(status_code=400, detail="Text query cannot be empty")
     
+    from backend.dual_model_classifier import predict_dual_models
     result = predict_dual_models(payload.text)
     return result
 
-
 @app.get("/api/stats")
 def get_dataset_stats():
-    json_path = r"C:\Users\balla\OneDrive\Desktop\CodeMix\data\dataset.json"
+    json_path = os.path.join(DATA_DIR, "dataset.json")
     if not os.path.exists(json_path):
-        return {"error": "Dataset not found"}
+        alt_path = r"C:\Users\balla\OneDrive\Desktop\codemix\data\dataset.json"
+        if os.path.exists(alt_path):
+            json_path = alt_path
+        else:
+            return {"error": "Dataset not found"}
 
     with open(json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -90,19 +103,17 @@ def get_dataset_stats():
         "code_mix_types": code_mix_types
     }
 
-
 @app.get("/api/metrics")
 def get_metrics():
     metrics_path = os.path.join(BACKEND_DATA, "evaluation_metrics.json")
     if os.path.exists(metrics_path):
-        with open(metrics_path, "r") as f:
+        with open(metrics_path, "r", encoding="utf-8") as f:
             return json.load(f)
     return {
         "muril": {"name": "Google MuRIL", "accuracy": 0.9545, "f1_score": 0.9545},
         "indicbert": {"name": "IndicBERT", "accuracy": 0.9091, "f1_score": 0.9091},
         "best_overall_model": "Google MuRIL"
     }
-
 
 @app.get("/api/download/{filename}")
 def download_artifact(filename: str):
@@ -111,7 +122,7 @@ def download_artifact(filename: str):
         raise HTTPException(status_code=400, detail="Invalid filename requested")
 
     if filename.startswith("Tamil_English_Fake_Real_Dataset_Full"):
-        file_path = os.path.join(r"C:\Users\balla\OneDrive\Desktop\CodeMix\data", filename)
+        file_path = os.path.join(DATA_DIR, filename)
     else:
         file_path = os.path.join(BACKEND_DATA, filename)
 
@@ -119,7 +130,6 @@ def download_artifact(filename: str):
         raise HTTPException(status_code=404, detail="File not found")
 
     return FileResponse(file_path, filename=filename)
-
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 

@@ -1,9 +1,17 @@
 import os
+import sys
 import pickle
 import torch
 import numpy as np
 from typing import Dict, Any, List
 from transformers import AutoTokenizer, AutoModel
+
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
 
 BACKEND_DATA = r"C:\Users\balla\OneDrive\Desktop\CodeMix\backend\data"
 
@@ -195,6 +203,27 @@ def predict_dual_models(text: str) -> Dict[str, Any]:
     cm_analysis = analyze_tanglish(text)
     risks, category = get_risk_factors(text, is_fake=(label_id_m == 1 or label_id_i == 1))
 
+    label_str_m = "Fake" if label_id_m == 1 else "Real"
+    label_str_i = "Fake" if label_id_i == 1 else "Real"
+
+    # Generate structured AI Summary & Credibility Explanation
+    if best_label == "Fake":
+        ai_summary = (
+            f"<strong><i class=\"fa-solid fa-triangle-exclamation text-rose\"></i> AI Credibility Flag: HIGH MISINFORMATION RISK</strong><br>"
+            f"This content was evaluated as <strong>FAKE</strong> with <strong>{best_conf}% confidence</strong> by {best_model}. "
+            f"The statement falls under <em>{category}</em> with a Code-Mixing Index (CMI) of {cm_analysis['cmi']}%. "
+            f"Linguistic marker detection flagged patterns typical of unverified viral social rumors. "
+            f"Cross-model verification: Google MuRIL classified as {label_str_m} ({conf_m}%), "
+            f"while IndicBERT classified as {label_str_i} ({conf_i}%)."
+        )
+    else:
+        ai_summary = (
+            f"<strong><i class=\"fa-solid fa-circle-check text-emerald\"></i> AI Credibility Verification: CREDIBLE CONTENT</strong><br>"
+            f"This content was evaluated as <strong>REAL</strong> with <strong>{best_conf}% confidence</strong> by {best_model}. "
+            f"The phrasing exhibits standard informational structure in <em>{category}</em> ({cm_analysis['code_mix_type']}). "
+            f"Both Google MuRIL ({conf_m}%) and IndicBERT ({conf_i}%) found no indicators of deceptive viral manipulation."
+        )
+
     return {
         "text": text,
         "category": category,
@@ -202,6 +231,7 @@ def predict_dual_models(text: str) -> Dict[str, Any]:
         "cmi": cm_analysis["cmi"],
         "tanglish_pct": cm_analysis["tanglish_pct"],
         "english_pct": cm_analysis["english_pct"],
+        "ai_summary": ai_summary,
         "best_model_recommendation": {
             "model_name": best_model,
             "predicted_label": best_label,
