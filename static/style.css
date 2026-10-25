@@ -1228,3 +1228,546 @@ textarea#detector-input::placeholder {
 .app-footer strong {
     color: var(--text-secondary);
 }
+
+/* ==========================================================================
+   RESEARCH EXTENSION STYLING: ROBUSTNESS LAB, EXPLAINABILITY & RISK SCORE
+   ========================================================================== */
+
+/* Nav Badge Novelty */
+.nav-badge-novelty {
+    font-size: 10px;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(135deg, #EC4899, #8B5CF6);
+    color: #fff;
+    margin-left: 6px;
+    letter-spacing: 0.04em;
+    box-shadow: 0 0 10px rgba(236, 72, 153, 0.4);
+}
+
+/* Decision Reliability Banner */
+.reliability-card {
+    background: var(--surface-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 18px 24px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    box-shadow: var(--shadow-card);
+}
+
+.reliability-meta {
+    flex: 1;
+}
+
+.reliability-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+}
+
+.reliability-badge {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.reliability-badge.emerald {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    color: #34D399;
+}
+
+.reliability-badge.indigo {
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    color: #818CF8;
+}
+
+.reliability-badge.amber {
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    color: #FBBF24;
+}
+
+.reliability-badge.rose {
+    background: rgba(244, 63, 94, 0.15);
+    border: 1px solid rgba(244, 63, 94, 0.35);
+    color: #FB7185;
+}
+
+.reliability-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.reliability-disclaimer {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-style: italic;
+}
+
+/* Misinformation Risk Score Card */
+.risk-score-card {
+    background: var(--surface-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 22px 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-card);
+}
+
+.risk-score-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.risk-score-header h3 {
+    font-family: var(--font-heading);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-pure);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.risk-grid {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 24px;
+    align-items: center;
+}
+
+.risk-dial-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10, 14, 26, 0.5);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    text-align: center;
+}
+
+.risk-dial-val {
+    font-family: var(--font-heading);
+    font-size: 44px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.risk-dial-val.rose { color: #F43F5E; }
+.risk-dial-val.orange { color: #FB923C; }
+.risk-dial-val.amber { color: #F59E0B; }
+.risk-dial-val.emerald { color: #10B981; }
+
+.risk-dial-tier {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.risk-breakdown-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.risk-breakdown-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.risk-item-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12.5px;
+}
+
+.risk-item-label {
+    color: var(--text-secondary);
+}
+
+.risk-item-val {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--text-pure);
+}
+
+/* Claim Extraction Card */
+.claim-card {
+    background: var(--surface-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 22px 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-card);
+}
+
+.claim-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.claim-header h3 {
+    font-family: var(--font-heading);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-pure);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.claim-quote-box {
+    background: rgba(99, 102, 241, 0.05);
+    border-left: 3px solid var(--primary-indigo);
+    padding: 14px 18px;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-pure);
+    margin-bottom: 14px;
+}
+
+.claim-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.badge-tag {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.badge-tag.highlight {
+    background: rgba(99, 102, 241, 0.12);
+    border-color: rgba(99, 102, 241, 0.3);
+    color: #818CF8;
+}
+
+/* Explainability Signals Grid */
+.signals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.signal-tile {
+    background: rgba(10, 14, 26, 0.45);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.signal-tile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.signal-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-pure);
+}
+
+.signal-badge {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: var(--radius-pill);
+    text-transform: uppercase;
+}
+
+.signal-badge.CRITICAL { background: rgba(244, 63, 94, 0.2); color: #FB7185; border: 1px solid rgba(244, 63, 94, 0.3); }
+.signal-badge.HIGH { background: rgba(251, 146, 60, 0.2); color: #FDBA74; border: 1px solid rgba(251, 146, 60, 0.3); }
+.signal-badge.MEDIUM { background: rgba(245, 158, 11, 0.2); color: #FCD34D; border: 1px solid rgba(245, 158, 11, 0.3); }
+.signal-badge.LOW { background: rgba(99, 102, 241, 0.2); color: #A5B4FC; border: 1px solid rgba(99, 102, 241, 0.3); }
+
+.signal-desc {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.signal-evidence {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #F87171;
+    background: rgba(244, 63, 94, 0.08);
+    padding: 2px 6px;
+    border-radius: 4px;
+    width: fit-content;
+    margin-top: 2px;
+}
+
+/* Quick Robustness Link Box */
+.quick-robustness-box {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(236, 72, 153, 0.08));
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    border-radius: var(--radius-lg);
+    padding: 16px 20px;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.quick-rob-text h4 {
+    font-family: var(--font-heading);
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--text-pure);
+    margin-bottom: 2px;
+}
+
+.quick-rob-text p {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   TANGLISH ROBUSTNESS LAB STYLING
+   ========================================================================== */
+.lab-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.lab-metric-tile {
+    background: var(--surface-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.lab-metric-title {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
+}
+
+.lab-metric-val {
+    font-family: var(--font-heading);
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text-pure);
+}
+
+.lab-metric-sub {
+    font-size: 11.5px;
+    color: var(--text-secondary);
+}
+
+/* Academic Research Finding Callout Box */
+.research-callout-box {
+    background: rgba(99, 102, 241, 0.06);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    border-left: 4px solid var(--primary-indigo);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    margin-bottom: 24px;
+}
+
+.research-callout-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-heading);
+    font-size: 14px;
+    font-weight: 700;
+    color: #818CF8;
+    margin-bottom: 6px;
+}
+
+.research-callout-body {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-primary);
+}
+
+/* Robustness Variants Table */
+.variants-table-card {
+    background: var(--surface-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 22px 24px;
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    text-align: left;
+}
+
+.styled-table th {
+    background: rgba(10, 14, 26, 0.6);
+    padding: 12px 14px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--border-strong);
+}
+
+.styled-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+}
+
+.styled-table tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.table-pill {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: var(--radius-pill);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.table-pill.fake {
+    background: var(--verdict-fake-bg);
+    color: var(--verdict-fake);
+    border: 1px solid var(--verdict-fake-border);
+}
+
+.table-pill.real {
+    background: var(--verdict-real-bg);
+    color: var(--verdict-real);
+    border: 1px solid var(--verdict-real-border);
+}
+
+.table-pill.stable {
+    background: rgba(16, 185, 129, 0.12);
+    color: #34D399;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.table-pill.flipped {
+    background: rgba(244, 63, 94, 0.12);
+    color: #FB7185;
+    border: 1px solid rgba(244, 63, 94, 0.25);
+}
+
+/* 3-Way Experiment Cards */
+.experiment-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.exp-group-card {
+    background: var(--surface-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.exp-group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.exp-group-badge {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    background: rgba(99, 102, 241, 0.12);
+    color: #818CF8;
+}
+
+.exp-group-title {
+    font-family: var(--font-heading);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-pure);
+}
+
+.exp-metric-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12.5px;
+    border-bottom: 1px dashed var(--border-subtle);
+    padding-bottom: 4px;
+}
+
+.exp-metric-label {
+    color: var(--text-muted);
+}
+
+.exp-metric-val {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--text-pure);
+}
+

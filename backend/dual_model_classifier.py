@@ -13,7 +13,7 @@ if sys.platform == "win32":
     except Exception:
         pass
 
-BACKEND_DATA = r"C:\Users\balla\OneDrive\Desktop\CodeMix\backend\data"
+BACKEND_DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 
 MURIL_NAME = "google/muril-base-cased"
 INDIC_NAME = "bert-base-multilingual-cased"
@@ -162,9 +162,8 @@ def get_risk_factors(text: str, is_fake: bool) -> tuple[List[str], str]:
 
     return risks, category
 
-def predict_dual_models(text: str) -> Dict[str, Any]:
+def predict_dual_raw(text: str) -> Dict[str, Any]:
     init_models()
-
     emb_muril = get_muril_emb(text)
     emb_indic = get_indic_emb(text)
 
@@ -188,31 +187,96 @@ def predict_dual_models(text: str) -> Dict[str, Any]:
 
     conf_i = round((fake_p_i if label_id_i == 1 else real_p_i) * 100, 1)
 
+    return {
+        "muril_results": {
+            "model_name": "Google MuRIL (google/muril-base-cased)",
+            "label": label_id_m,
+            "label_name": "Fake" if label_id_m == 1 else "Real",
+            "confidence": conf_m,
+            "probabilities": {"Real": round(real_p_m, 4), "Fake": round(fake_p_m, 4)}
+        },
+        "indic_results": {
+            "model_name": "IndicBERT (bert-base-multilingual-cased)",
+            "label": label_id_i,
+            "label_name": "Fake" if label_id_i == 1 else "Real",
+            "confidence": conf_i,
+            "probabilities": {"Real": round(real_p_i, 4), "Fake": round(fake_p_i, 4)}
+        }
+    }
+
+def predict_dual_models(text: str) -> Dict[str, Any]:
+    from backend.explainability_engine import analyze_explainability
+    from backend.claim_extractor import analyze_claim
+    from backend.agreement_engine import evaluate_model_agreement
+    from backend.risk_score import calculate_misinformation_risk_score
+
+    raw = predict_dual_raw(text)
+    m_res = raw["muril_results"]
+    i_res = raw["indic_results"]
+
+    label_id_m = m_res["label"]
+    label_str_m = m_res["label_name"]
+    conf_m = m_res["confidence"]
+    fake_p_m = m_res["probabilities"]["Fake"]
+
+    label_id_i = i_res["label"]
+    label_str_i = i_res["label_name"]
+    conf_i = i_res["confidence"]
+    fake_p_i = i_res["probabilities"]["Fake"]
+
     # Select Best Model
     if conf_m >= conf_i:
         best_model = "Google MuRIL"
-        best_label = "Fake" if label_id_m == 1 else "Real"
+        best_label = label_str_m
         best_conf = conf_m
         best_reason = "Google MuRIL achieved higher confidence due to its specialized transliterated & romanized Indic pre-training."
     else:
         best_model = "IndicBERT"
-        best_label = "Fake" if label_id_i == 1 else "Real"
+        best_label = label_str_i
         best_conf = conf_i
         best_reason = "IndicBERT achieved higher confidence score on this query structure."
 
     cm_analysis = analyze_tanglish(text)
     risks, category = get_risk_factors(text, is_fake=(label_id_m == 1 or label_id_i == 1))
 
-    label_str_m = "Fake" if label_id_m == 1 else "Real"
-    label_str_i = "Fake" if label_id_i == 1 else "Real"
+    # 1. Explainability Engine
+    explain_data = analyze_explainability(text, muril_conf=conf_m, indic_conf=conf_i, best_label=best_label)
+
+    # 2. Claim Extraction Engine
+    claim_data = analyze_claim(text)
+    if claim_data["claim_type"] != "General Social Claim" and category == "General News":
+        category = claim_data["claim_type"]
+
+    # 3. Model Agreement & Reliability Engine
+    agreement_data = evaluate_model_agreement(
+        muril_label=label_str_m,
+        muril_conf=conf_m,
+        indic_label=label_str_i,
+        indic_conf=conf_i
+    )
+
+    # Baseline robustness factor
+    baseline_robustness = 87.5 if label_str_m == label_str_i else 50.0
+
+    # 4. Transparent Misinformation Risk Score
+    risk_score_data = calculate_misinformation_risk_score(
+        muril_label=label_str_m,
+        muril_prob_fake=fake_p_m,
+        indic_label=label_str_i,
+        indic_prob_fake=fake_p_i,
+        signal_score=explain_data["signal_score"],
+        robustness_score=baseline_robustness
+    )
 
     # Generate structured AI Summary & Credibility Explanation
     if best_label == "Fake":
         ai_summary = (
-            f"<strong><i class=\"fa-solid fa-triangle-exclamation text-rose\"></i> AI Credibility Flag: HIGH MISINFORMATION RISK</strong><br>"
+            f"<strong><i class=\"fa-solid fa-triangle-exclamation text-rose\"></i> AI Credibility Flag: {risk_score_data['risk_label']}</strong><br>"
             f"This content was evaluated as <strong>FAKE</strong> with <strong>{best_conf}% confidence</strong> by {best_model}. "
+            f"Decision Reliability is <strong>{agreement_data['decision_reliability']}</strong> ({agreement_data['headline']}). "
+            f"Composite Misinformation Risk Score: <strong>{risk_score_data['final_risk_score']}/100 ({risk_score_data['risk_level']})</strong>. "
             f"The statement falls under <em>{category}</em> with a Code-Mixing Index (CMI) of {cm_analysis['cmi']}%. "
-            f"Linguistic marker detection flagged patterns typical of unverified viral social rumors. "
+            f"Explainability Engine flagged {explain_data['signals_count']} linguistic risk signal(s). "
             f"Cross-model verification: Google MuRIL classified as {label_str_m} ({conf_m}%), "
             f"while IndicBERT classified as {label_str_i} ({conf_i}%)."
         )
@@ -220,6 +284,8 @@ def predict_dual_models(text: str) -> Dict[str, Any]:
         ai_summary = (
             f"<strong><i class=\"fa-solid fa-circle-check text-emerald\"></i> AI Credibility Verification: CREDIBLE CONTENT</strong><br>"
             f"This content was evaluated as <strong>REAL</strong> with <strong>{best_conf}% confidence</strong> by {best_model}. "
+            f"Decision Reliability is <strong>{agreement_data['decision_reliability']}</strong> ({agreement_data['headline']}). "
+            f"Composite Misinformation Risk Score: <strong>{risk_score_data['final_risk_score']}/100 ({risk_score_data['risk_level']})</strong>. "
             f"The phrasing exhibits standard informational structure in <em>{category}</em> ({cm_analysis['code_mix_type']}). "
             f"Both Google MuRIL ({conf_m}%) and IndicBERT ({conf_i}%) found no indicators of deceptive viral manipulation."
         )
@@ -238,19 +304,12 @@ def predict_dual_models(text: str) -> Dict[str, Any]:
             "confidence": best_conf,
             "reason": best_reason
         },
-        "muril_results": {
-            "model_name": "Google MuRIL (google/muril-base-cased)",
-            "label": label_id_m,
-            "label_name": "Fake" if label_id_m == 1 else "Real",
-            "confidence": conf_m,
-            "probabilities": {"Real": round(real_p_m, 4), "Fake": round(fake_p_m, 4)}
-        },
-        "indicbert_results": {
-            "model_name": "IndicBERT (bert-base-multilingual-cased)",
-            "label": label_id_i,
-            "label_name": "Fake" if label_id_i == 1 else "Real",
-            "confidence": conf_i,
-            "probabilities": {"Real": round(real_p_i, 4), "Fake": round(fake_p_i, 4)}
-        },
-        "risk_factors": risks
+        "muril_results": m_res,
+        "indicbert_results": i_res,
+        "risk_factors": risks,
+        "explainability": explain_data,
+        "claim_analysis": claim_data,
+        "agreement_analysis": agreement_data,
+        "decision_reliability": agreement_data["decision_reliability"],
+        "risk_score_analysis": risk_score_data
     }

@@ -61,6 +61,47 @@ def predict_fake_news(payload: TextQuery):
     result = predict_dual_models(payload.text)
     return result
 
+@app.post("/api/robustness")
+def analyze_robustness(payload: TextQuery):
+    if not payload.text or not payload.text.strip():
+        raise HTTPException(status_code=400, detail="Text query cannot be empty")
+    
+    from backend.dual_model_classifier import predict_dual_models, predict_dual_raw
+    from backend.robustness_analyzer import run_robustness_experiment
+
+    baseline = predict_dual_models(payload.text)
+    exp_results = run_robustness_experiment(
+        original_text=payload.text,
+        original_muril_res=baseline["muril_results"],
+        original_indic_res=baseline["indicbert_results"],
+        predict_fn=predict_dual_raw
+    )
+    return {
+        **exp_results,
+        "original_baseline": baseline
+    }
+
+@app.post("/api/explain")
+def explain_text(payload: TextQuery):
+    if not payload.text or not payload.text.strip():
+        raise HTTPException(status_code=400, detail="Text query cannot be empty")
+    
+    from backend.explainability_engine import analyze_explainability
+    return analyze_explainability(payload.text)
+
+@app.post("/api/claim-analysis")
+def extract_claim_api(payload: TextQuery):
+    if not payload.text or not payload.text.strip():
+        raise HTTPException(status_code=400, detail="Text query cannot be empty")
+    
+    from backend.claim_extractor import analyze_claim
+    return analyze_claim(payload.text)
+
+@app.get("/api/robustness-benchmark")
+def get_robustness_benchmark():
+    from backend.benchmark_eval import get_or_create_benchmark_results
+    return get_or_create_benchmark_results()
+
 @app.get("/api/stats")
 def get_dataset_stats():
     json_path = os.path.join(DATA_DIR, "dataset.json")

@@ -1268,6 +1268,11 @@ textarea#detector-input::placeholder {
                         <i class="fa-solid fa-sliders"></i>
                         <span>Live Predictor</span>
                     </button>
+                    <button class="nav-tab" data-tab="tab-robustness" role="tab" aria-selected="false">
+                        <i class="fa-solid fa-flask-vial"></i>
+                        <span>Tanglish Robustness Lab</span>
+                        <span class="nav-badge-novelty">RESEARCH ⭐</span>
+                    </button>
                     <button class="nav-tab" data-tab="tab-analytics" role="tab" aria-selected="false">
                         <i class="fa-solid fa-chart-line"></i>
                         <span>Benchmark Analytics</span>
@@ -1462,28 +1467,233 @@ textarea#detector-input::placeholder {
                         </div>
                     </div>
 
-                    <!-- AI Summary & Credibility Assessment -->
+                    <!-- Decision Reliability & Model Agreement Banner -->
+                    <div class="reliability-card">
+                        <div class="reliability-meta">
+                            <div class="reliability-title-row">
+                                <span class="reliability-badge emerald" id="res-rel-badge">HIGH RELIABILITY</span>
+                                <h3 id="res-rel-headline" style="font-size: 15px; font-weight: 700; color: var(--text-pure);">High Inter-Model Consensus</h3>
+                            </div>
+                            <p class="reliability-desc" id="res-rel-diagnosis">Both models independently converged with strong margin of confidence.</p>
+                            <p class="reliability-disclaimer"><i class="fa-solid fa-circle-info"></i> Notice: Decision reliability measures inter-transformer representation agreement and boundary margin, not guaranteed ground truth.</p>
+                        </div>
+                    </div>
+
+                    <!-- Transparent Misinformation Risk Score Card -->
+                    <div class="risk-score-card">
+                        <div class="risk-score-header">
+                            <h3><i class="fa-solid fa-gauge-high" style="color: var(--amber-gold);"></i> Transparent Misinformation Risk Score</h3>
+                            <span class="badge-tag" style="font-size: 11px;">Linear Multi-Factor Formulation</span>
+                        </div>
+                        <div class="risk-grid">
+                            <div class="risk-dial-box">
+                                <div class="risk-dial-val rose" id="res-risk-score-val">82</div>
+                                <div class="risk-dial-tier" id="res-risk-score-tier" style="color: var(--verdict-fake);">CRITICAL</div>
+                                <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Score Scale: 0 to 100</p>
+                            </div>
+                            <div class="risk-breakdown-list">
+                                <p id="res-risk-summary" style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 8px;">Substantial model evidence and suspicious linguistic signals detected.</p>
+                                
+                                <div class="risk-breakdown-item">
+                                    <div class="risk-item-meta">
+                                        <span class="risk-item-label">Model Evidence Ensemble (Weight: 40%)</span>
+                                        <span class="risk-item-val" id="val-risk-model">90.0/100</span>
+                                    </div>
+                                    <div class="bar-track"><div class="bar-fill" id="bar-risk-model" style="width: 90%; background: linear-gradient(90deg, #6366F1, #818CF8);"></div></div>
+                                </div>
+                                <div class="risk-breakdown-item">
+                                    <div class="risk-item-meta">
+                                        <span class="risk-item-label">Inter-Model Agreement (Weight: 25%)</span>
+                                        <span class="risk-item-val" id="val-risk-agree">100.0/100</span>
+                                    </div>
+                                    <div class="bar-track"><div class="bar-fill" id="bar-risk-agree" style="width: 100%; background: linear-gradient(90deg, #EC4899, #F43F5E);"></div></div>
+                                </div>
+                                <div class="risk-breakdown-item">
+                                    <div class="risk-item-meta">
+                                        <span class="risk-item-label">Linguistic Warning Signals (Weight: 20%)</span>
+                                        <span class="risk-item-val" id="val-risk-signals">75.0/100</span>
+                                    </div>
+                                    <div class="bar-track"><div class="bar-fill" id="bar-risk-signals" style="width: 75%; background: linear-gradient(90deg, #F59E0B, #FB923C);"></div></div>
+                                </div>
+                                <div class="risk-breakdown-item">
+                                    <div class="risk-item-meta">
+                                        <span class="risk-item-label">Tanglish Robustness Factor (Weight: 15%)</span>
+                                        <span class="risk-item-val" id="val-risk-robust">83.0/100</span>
+                                    </div>
+                                    <div class="bar-track"><div class="bar-fill" id="bar-risk-robust" style="width: 83%; background: linear-gradient(90deg, #10B981, #2DD4BF);"></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Claim Extraction & Analysis Card -->
+                    <div class="claim-card">
+                        <div class="claim-header">
+                            <h3><i class="fa-solid fa-bullseye" style="color: #818CF8;"></i> Extracted Core Proposition</h3>
+                            <span class="badge-tag highlight" id="res-claim-domain"><i class="fa-solid fa-shapes"></i> Technology / Environmental</span>
+                        </div>
+                        <div class="claim-quote-box" id="res-claim-quote">
+                            "5G tower electromagnetic radiation is causing sparrows and avian deaths."
+                        </div>
+                        <div class="claim-meta-row">
+                            <span class="badge-tag" id="res-claim-causal"><i class="fa-solid fa-link text-rose"></i> Causal Assertion Flagged</span>
+                            <span class="badge-tag" id="res-claim-citation"><i class="fa-solid fa-circle-exclamation text-amber"></i> No Verifiable Institutional Citation</span>
+                        </div>
+                    </div>
+
+                    <!-- Explainable Suspicious Signals Card -->
                     <div class="summary-report-card">
                         <div class="summary-header">
-                            <h3><i class="fa-solid fa-wand-magic-sparkles"></i> AI Synthesis & Credibility Assessment</h3>
-                            <span class="summary-badge"><i class="fa-solid fa-code-compare"></i> Dual Model Consensus</span>
+                            <h3><i class="fa-solid fa-shield-halved" style="color: #F43F5E;"></i> Explainability Engine — Detected Suspicious Signals</h3>
+                            <span class="summary-badge"><i class="fa-solid fa-brain"></i> Rule-Based Linguistic Evidence</span>
                         </div>
                         <div class="summary-body">
-                            <div class="synthesis-text" id="res-ai-summary">
-                                Processing AI Summary & Credibility Assessment...
+                            <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 8px;">
+                                Transparent, rule-based linguistic markers independently detected to explain why this text exhibits deception characteristics:
+                            </p>
+                            <div class="signals-grid" id="res-signals-grid">
+                                <!-- Populated dynamically -->
                             </div>
-                            <div class="analysis-section">
-                                <div class="risk-markers-title"><i class="fa-solid fa-triangle-exclamation"></i> Detected Risk & Pattern Markers</div>
-                                <ul class="risk-list" id="res-risk-list">
+                        </div>
+                    </div>
+
+                    <!-- Quick Robustness Callout -->
+                    <div class="quick-robustness-box">
+                        <div class="quick-rob-text">
+                            <h4><i class="fa-solid fa-flask-vial" style="color: #EC4899;"></i> Research Dimension: Tanglish Robustness Test</h4>
+                            <p>Will the models flip their prediction if this message is spelled with different colloquial Tanglish variants?</p>
+                        </div>
+                        <button id="btn-send-to-robustness" class="btn btn-primary" style="white-space: nowrap;">
+                            <i class="fa-solid fa-vial-circle-check"></i> Test in Robustness Lab
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: TANGLISH ROBUSTNESS LAB -->
+            <section id="tab-robustness" class="tab-pane" role="tabpanel">
+                <!-- Hero Intro -->
+                <div class="hero-section">
+                    <div class="hero-pill" style="background: rgba(236, 72, 153, 0.12); border-color: rgba(236, 72, 153, 0.3); color: #F472B6;">
+                        <i class="fa-solid fa-flask-vial"></i>
+                        <span>Primary Academic Novelty & Robustness Intelligence</span>
+                    </div>
+                    <h2>Tanglish Robustness & Perturbation Lab</h2>
+                    <p>Evaluate transformer prediction stability under natural Tamil-English colloquial spelling variations, transliteration vowel shifts, lexical substitutions, and social media slang elongation.</p>
+                </div>
+
+                <!-- Input Studio Card -->
+                <div class="workbench-card">
+                    <div class="workbench-toolbar">
+                        <div class="toolbar-label">
+                            <i class="fa-solid fa-vial"></i>
+                            <span>Linguistic Variation Test Canvas</span>
+                        </div>
+                    </div>
+                    
+                    <div class="workbench-body">
+                        <textarea id="robustness-input" placeholder="Enter Tanglish news text to test robustness, e.g. 'Whatsapp la share aagura message: 5G tower rays vandhu sparrows ah kill pannuthu, immediate ah stop panna solranga.'">Whatsapp la share aagura message: 5G tower rays vandhu sparrows ah kill pannuthu, immediate ah stop panna solranga.</textarea>
+                        
+                        <!-- Curated Lab Presets -->
+                        <div class="benchmark-presets-panel">
+                            <div class="presets-header">
+                                <span class="presets-title"><i class="fa-solid fa-flask-vial"></i> Load Research Test Cases:</span>
+                            </div>
+                            <div class="preset-chips-grid">
+                                <button class="preset-btn rob-preset-btn" data-preset="Whatsapp la share aagura message: 5G tower rays vandhu sparrows and birds ah kill pannuthu, immediate ah stop panna solranga.">
+                                    <span class="chip-tag tag-fake">Tech Hoax</span>
+                                    <span class="preset-btn-text">5G Radiation & Bird Deaths</span>
+                                </button>
+                                <button class="preset-btn rob-preset-btn" data-preset="Intha kashayam kudicha 2 days la COVID and virus fully cure aayidum no need for hospital visit bro.">
+                                    <span class="chip-tag tag-fake">Health Hoax</span>
+                                    <span class="preset-btn-text">COVID Kashayam Remedy</span>
+                                </button>
+                                <button class="preset-btn rob-preset-btn" data-preset="TN Government announced tomorrow local holiday for Chennai schools due to heavy rain forecast by IMD.">
+                                    <span class="chip-tag tag-real">Official Real</span>
+                                    <span class="preset-btn-text">IMD Rain Holiday</span>
+                                </button>
+                                <button class="preset-btn rob-preset-btn" data-preset="Pluto planet eppo Earth pakkathula varudho appo free electricity get panni namma use pannalam bro viral video.">
+                                    <span class="chip-tag tag-fake">Science Hoax</span>
+                                    <span class="preset-btn-text">Pluto Free Electricity</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Action Button -->
+                        <div class="workbench-actions">
+                            <span class="shortcut-hint"><i class="fa-solid fa-microscope"></i> Evaluates both models across 8 controlled semantic variations</span>
+                            <button id="btn-run-robustness" class="btn btn-primary" style="background: linear-gradient(135deg, #6366F1, #EC4899);">
+                                <i class="fa-solid fa-flask-vial"></i> Run Perturbation Experiment
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Robustness Results Container -->
+                <div id="robustness-results" class="hidden">
+                    <!-- Summary Metric Tiles -->
+                    <div class="lab-metrics-grid">
+                        <div class="lab-metric-tile">
+                            <span class="lab-metric-title">Robustness Score</span>
+                            <div class="lab-metric-val" id="rob-score-val" style="color: #2DD4BF;">--%</div>
+                            <span class="lab-metric-sub">Mean Stability Rate</span>
+                        </div>
+                        <div class="lab-metric-tile">
+                            <span class="lab-metric-title">MuRIL Stability</span>
+                            <div class="lab-metric-val" id="rob-muril-stab" style="color: #818CF8;">--%</div>
+                            <span class="lab-metric-sub">Consistent Predictions</span>
+                        </div>
+                        <div class="lab-metric-tile">
+                            <span class="lab-metric-title">IndicBERT Stability</span>
+                            <div class="lab-metric-val" id="rob-indic-stab" style="color: #2DD4BF;">--%</div>
+                            <span class="lab-metric-sub">Consistent Predictions</span>
+                        </div>
+                        <div class="lab-metric-tile">
+                            <span class="lab-metric-title">Inter-Model Agreement</span>
+                            <div class="lab-metric-val" id="rob-agree-rate" style="color: #F59E0B;">--%</div>
+                            <span class="lab-metric-sub">Dual Model Consensus</span>
+                        </div>
+                    </div>
+
+                    <!-- Academic Research Callout Box -->
+                    <div class="research-callout-box">
+                        <div class="research-callout-header">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                            <span>Empirical Research Observation</span>
+                        </div>
+                        <div class="research-callout-body" id="rob-research-obs">
+                            Loading empirical analysis...
+                        </div>
+                    </div>
+
+                    <!-- Variants Comparison Table -->
+                    <div class="variants-table-card">
+                        <div class="summary-header" style="margin-bottom: 14px;">
+                            <h3><i class="fa-solid fa-table-list"></i> Controlled Tanglish Perturbations vs Dual Model Predictions</h3>
+                            <span class="badge-tag highlight"><i class="fa-solid fa-check-double"></i> Semantic Meaning Preserved</span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="styled-table">
+                                <thead>
+                                    <tr>
+                                        <th>Variation Type</th>
+                                        <th>Perturbed Tanglish Text</th>
+                                        <th>Google MuRIL</th>
+                                        <th>IndicBERT</th>
+                                        <th style="text-align: center;">Agreement</th>
+                                        <th>Stability</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rob-table-body">
                                     <!-- Populated dynamically -->
-                                </ul>
-                            </div>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- TAB 2: ANALYTICS & BENCHMARK -->
+            <!-- TAB 3: ANALYTICS & BENCHMARK -->
             <section id="tab-analytics" class="tab-pane" role="tabpanel">
                 <div class="analytics-section-title">
                     <h2>MuRIL vs IndicBERT Benchmark Analysis</h2>
@@ -1566,6 +1776,64 @@ textarea#detector-input::placeholder {
                         </div>
                     </div>
                 </div>
+
+                <!-- RESEARCH EVALUATION: STANDARD VS ROBUSTNESS METRICS -->
+                <div class="workbench-card" style="margin-top: 24px;">
+                    <div class="workbench-toolbar">
+                        <div class="toolbar-label">
+                            <i class="fa-solid fa-scale-balanced" style="color: #818CF8;"></i>
+                            <span>Standard Performance vs. Tanglish Robustness Benchmark</span>
+                            <span class="nav-badge-novelty">RESEARCH EVALUATION</span>
+                        </div>
+                    </div>
+                    <div class="workbench-body">
+                        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+                            While conventional fake news detection only measures Accuracy and F1-Score on static test sets, this benchmark additionally measures representation stability under real-world Tanglish phonetic shifts, transliteration noise, and subword segmentation fragility.
+                        </p>
+                        <div class="table-responsive">
+                            <table class="styled-table">
+                                <thead>
+                                    <tr>
+                                        <th>Evaluation Metric</th>
+                                        <th>Google MuRIL (google/muril-base-cased)</th>
+                                        <th>IndicBERT (bert-base-multilingual-cased)</th>
+                                        <th>Benchmark Leader / Analysis</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="benchmark-metrics-body">
+                                    <!-- Populated dynamically from /api/robustness-benchmark -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3-WAY LINGUISTIC SHIFT EXPERIMENT -->
+                <div class="workbench-card" style="margin-top: 24px;">
+                    <div class="workbench-toolbar">
+                        <div class="toolbar-label">
+                            <i class="fa-solid fa-diagram-project" style="color: #2DD4BF;"></i>
+                            <span>3-Way Linguistic Shift Experiment: English vs Tanglish vs Perturbed</span>
+                        </div>
+                    </div>
+                    <div class="workbench-body">
+                        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 14px;">
+                            Comparative tracking of prediction consistency and confidence decay as news text transitions across three progressive linguistic tiers:
+                        </p>
+                        <div class="experiment-grid" id="three-way-exp-grid">
+                            <!-- Populated dynamically -->
+                        </div>
+                        <div class="research-callout-box" style="margin-top: 20px;">
+                            <div class="research-callout-header">
+                                <i class="fa-solid fa-lightbulb"></i>
+                                <span>Key Empirical Research Insight</span>
+                            </div>
+                            <div class="research-callout-body" id="three-way-finding">
+                                Loading research findings...
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <!-- TAB 3: DOWNLOADS -->
@@ -1613,260 +1881,7 @@ textarea#detector-input::placeholder {
         </footer>
     </div>
 
-    <!-- Scripts: Both external link and inlined script for guaranteed execution -->
+    <!-- External application script -->
     <script src="/static/app.js"></script>
-    <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // Tab Switching
-    const navTabs = document.querySelectorAll('.nav-tab');
-    const tabPanes = document.querySelectorAll('.tab-pane');
-
-    navTabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            const target = tab.dataset.tab;
-
-            navTabs.forEach(t => t.classList.remove('active'));
-            tabPanes.forEach(p => p.classList.remove('active'));
-
-            tab.classList.add('active');
-            const targetPane = document.getElementById(target);
-            if (targetPane) targetPane.classList.add('active');
-
-            if (target === 'tab-analytics') {
-                loadAnalytics();
-            } else if (target === 'tab-artifacts') {
-                loadMetrics();
-            }
-        });
-    });
-
-    // Elements
-    const detectorInput = document.getElementById('detector-input');
-    const btnClear = document.getElementById('btn-clear');
-    const btnAnalyze = document.getElementById('btn-analyze');
-    const presetBtns = document.querySelectorAll('.preset-btn');
-    const charWordCount = document.getElementById('char-word-count');
-
-    const resultEmpty = document.getElementById('result-empty');
-    const resultDetails = document.getElementById('result-details');
-
-    const bestModelName = document.getElementById('best-model-name');
-    const bestModelReason = document.getElementById('best-model-reason');
-    const bestVerdictTitle = document.getElementById('best-verdict-title');
-
-    const murilBanner = document.getElementById('muril-banner');
-    const murilIcon = document.getElementById('muril-icon');
-    const murilTitle = document.getElementById('muril-title');
-    const murilSubtitle = document.getElementById('muril-subtitle');
-    const murilProbs = document.getElementById('muril-probs');
-
-    const indicBanner = document.getElementById('indic-banner');
-    const indicIcon = document.getElementById('indic-icon');
-    const indicTitle = document.getElementById('indic-title');
-    const indicSubtitle = document.getElementById('indic-subtitle');
-    const indicProbs = document.getElementById('indic-probs');
-
-    const resLangType = document.getElementById('res-lang-type');
-    const resCmi = document.getElementById('res-cmi');
-    const resCategory = document.getElementById('res-category');
-    const resRatio = document.getElementById('res-ratio');
-
-    // Live Word & Character Counter
-    function updateCounter() {
-        if (!charWordCount || !detectorInput) return;
-        const text = detectorInput.value.trim();
-        const chars = detectorInput.value.length;
-        const words = text ? text.split(/\s+/).length : 0;
-        charWordCount.innerText = `${words} words · ${chars} chars`;
-    }
-
-    if (detectorInput) {
-        detectorInput.addEventListener('input', updateCounter);
-        // Ctrl + Enter shortcut
-        detectorInput.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                e.preventDefault();
-                const text = detectorInput.value.trim();
-                if (text) runDualAnalysis(text);
-            }
-        });
-    }
-
-    // Benchmark Presets
-    presetBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (!btn.dataset.preset) return;
-            detectorInput.value = btn.dataset.preset;
-            updateCounter();
-            runDualAnalysis(btn.dataset.preset);
-        });
-    });
-
-    // Clear Button
-    if (btnClear) {
-        btnClear.addEventListener('click', () => {
-            detectorInput.value = '';
-            updateCounter();
-            if (resultEmpty) resultEmpty.classList.remove('hidden');
-            if (resultDetails) resultDetails.classList.add('hidden');
-        });
-    }
-
-    // Analyze Button
-    if (btnAnalyze) {
-        btnAnalyze.addEventListener('click', () => {
-            const text = detectorInput.value.trim();
-            if (text) {
-                runDualAnalysis(text);
-            } else {
-                detectorInput.focus();
-            }
-        });
-    }
-
-    // Dual Model API Inference
-    async function runDualAnalysis(text) {
-        btnAnalyze.disabled = true;
-        btnAnalyze.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing Dual Inference...';
-
-        try {
-            const res = await fetch('/api/predict', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text })
-            });
-
-            if (!res.ok) throw new Error('API request failed');
-
-            const data = await res.json();
-            renderDualResults(data);
-        } catch (err) {
-            console.error('Error analyzing text:', err);
-            alert('Error connecting to backend API. Please make sure the server is running.');
-        } finally {
-            btnAnalyze.disabled = false;
-            btnAnalyze.innerHTML = '<i class="fa-solid fa-code-compare"></i> Compare MuRIL vs IndicBERT';
-        }
-    }
-
-    // Render Dual Model Results
-    function renderDualResults(data) {
-        if (resultEmpty) resultEmpty.classList.add('hidden');
-        if (resultDetails) {
-            resultDetails.classList.remove('hidden');
-            // Smooth scroll into view
-            resultDetails.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-
-        // Winner Recommendation
-        const rec = data.best_model_recommendation;
-        if (bestModelName) bestModelName.innerText = rec.model_name;
-        if (bestModelReason) bestModelReason.innerText = rec.reason;
-        if (bestVerdictTitle) {
-            bestVerdictTitle.innerText = rec.predicted_label.toUpperCase();
-            bestVerdictTitle.style.color = rec.predicted_label === 'Fake' ? 'var(--verdict-fake)' : 'var(--verdict-real)';
-        }
-
-        // MuRIL Card
-        const m = data.muril_results;
-        const isFakeM = m.label === 1;
-        if (murilBanner) murilBanner.className = `verdict-banner ${isFakeM ? 'fake' : 'real'}`;
-        if (murilIcon) murilIcon.innerHTML = isFakeM ? '<i class="fa-solid fa-triangle-exclamation"></i>' : '<i class="fa-solid fa-circle-check"></i>';
-        if (murilTitle) murilTitle.innerText = m.label_name;
-        if (murilSubtitle) murilSubtitle.innerText = `Confidence: ${m.confidence}%`;
-        if (murilProbs) murilProbs.innerText = `Real: ${(m.probabilities.Real * 100).toFixed(1)}% | Fake: ${(m.probabilities.Fake * 100).toFixed(1)}%`;
-
-        // IndicBERT Card
-        const ind = data.indicbert_results;
-        const isFakeI = ind.label === 1;
-        if (indicBanner) indicBanner.className = `verdict-banner ${isFakeI ? 'fake' : 'real'}`;
-        if (indicIcon) indicIcon.innerHTML = isFakeI ? '<i class="fa-solid fa-triangle-exclamation"></i>' : '<i class="fa-solid fa-circle-check"></i>';
-        if (indicTitle) indicTitle.innerText = ind.label_name;
-        if (indicSubtitle) indicSubtitle.innerText = `Confidence: ${ind.confidence}%`;
-        if (indicProbs) indicProbs.innerText = `Real: ${(ind.probabilities.Real * 100).toFixed(1)}% | Fake: ${(ind.probabilities.Fake * 100).toFixed(1)}%`;
-
-        // Linguistic Analysis
-        if (resLangType) resLangType.innerText = data.code_mix_type;
-        if (resCmi) resCmi.innerText = `${data.cmi}%`;
-        if (resCategory) resCategory.innerText = data.category;
-        if (resRatio) resRatio.innerText = `${data.tanglish_pct}% / ${data.english_pct}%`;
-
-        // AI Summary & Credibility Assessment
-        const aiSummaryEl = document.getElementById('res-ai-summary');
-        if (aiSummaryEl) {
-            aiSummaryEl.innerHTML = data.ai_summary || `<strong>${rec.predicted_label === 'Fake' ? '⚠️ Misinformation Risk Detected:' : '✅ Credible Content Verified:'}</strong> ${rec.reason}`;
-        }
-
-        const riskListEl = document.getElementById('res-risk-list');
-        if (riskListEl) {
-            riskListEl.innerHTML = '';
-            if (data.risk_factors && data.risk_factors.length > 0) {
-                data.risk_factors.forEach(rf => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${rf}`;
-                    riskListEl.appendChild(li);
-                });
-            } else {
-                const li = document.createElement('li');
-                li.style.background = 'rgba(16, 185, 129, 0.08)';
-                li.style.borderColor = 'rgba(16, 185, 129, 0.25)';
-                li.style.color = '#34D399';
-                li.innerHTML = `<i class="fa-solid fa-circle-check" style="color:#10B981"></i> Standard journalistic phrasing with no high-risk sensationalist markers detected`;
-                riskListEl.appendChild(li);
-            }
-        }
-    }
-
-    // Benchmark Analytics
-    async function loadAnalytics() {
-        try {
-            const res = await fetch('/api/stats');
-            const data = await res.json();
-
-            const srcChart = document.getElementById('source-chart');
-            if (srcChart && data.sources) {
-                srcChart.innerHTML = '';
-                const total = data.total_samples;
-                Object.entries(data.sources).sort((a,b) => b[1] - a[1]).forEach(([src, count]) => {
-                    const pct = Math.round((count / total) * 100);
-                    srcChart.innerHTML += `
-                        <div class="chart-bar-item">
-                            <div class="bar-meta">
-                                <span>${src}</span>
-                                <span style="font-family: 'JetBrains Mono', monospace; font-weight: 600;">${count} items (${pct}%)</span>
-                            </div>
-                            <div class="bar-track">
-                                <div class="bar-fill" style="width: ${pct}%; background: linear-gradient(90deg, #6366F1, #2DD4BF);"></div>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-        } catch (err) {
-            console.error('Analytics load error:', err);
-        }
-    }
-
-    // Model Performance Metrics
-    async function loadMetrics() {
-        try {
-            const res = await fetch('/api/metrics');
-            const data = await res.json();
-
-            if (data.muril) {
-                const el = document.getElementById('bm-muril-acc');
-                if (el) el.innerText = `${(data.muril.accuracy * 100).toFixed(1)}%`;
-            }
-            if (data.indicbert) {
-                const el = document.getElementById('bm-indic-acc');
-                if (el) el.innerText = `${(data.indicbert.accuracy * 100).toFixed(1)}%`;
-            }
-        } catch (err) {
-            console.error('Metrics load error:', err);
-        }
-    }
-});
-
-    </script>
 </body>
 </html>
