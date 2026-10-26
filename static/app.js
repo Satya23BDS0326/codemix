@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Dual Model API Inference
-    async function runDualAnalysis(text) {
+    async function runDualAnalysis(text, isRetry = false) {
         btnAnalyze.disabled = true;
         btnAnalyze.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Evaluating Models & Explainability...';
 
@@ -124,13 +124,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ text })
             });
 
-            if (!res.ok) throw new Error('API request failed');
+            if (!res.ok) {
+                const errDetail = await res.text();
+                throw new Error(errDetail || 'API request failed');
+            }
 
             const data = await res.json();
             renderDualResults(data);
         } catch (err) {
-            console.error('Error analyzing text:', err);
-            alert('Error connecting to backend API. Please make sure the server is running.');
+            console.warn('Analysis request error:', err);
+            if (!isRetry) {
+                // Auto-retry once in case server was reloading or warming up models
+                btnAnalyze.innerHTML = '<i class="fa-solid fa-arrows-rotate fa-spin"></i> Connecting to models...';
+                await new Promise(r => setTimeout(r, 1500));
+                return runDualAnalysis(text, true);
+            }
+            alert('Could not connect to backend server. If you just started or reloaded the server, neural models take ~10 seconds to load into memory. Please press Ctrl+F5 to hard-refresh the page and try again.');
         } finally {
             btnAnalyze.disabled = false;
             btnAnalyze.innerHTML = '<i class="fa-solid fa-code-compare"></i> Compare MuRIL vs IndicBERT';
