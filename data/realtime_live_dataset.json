@@ -1,0 +1,59 @@
+[
+  {
+    "id": "RT-1",
+    "text": "Pluto planet eppo Earth pakkathula varudho appo free electricity get panni namma use pannalam bro",
+    "predicted_label": "Fake",
+    "chosen_model": "Google MuRIL",
+    "confidence": 99.9,
+    "muril_verdict": "Fake",
+    "indicbert_verdict": "Fake",
+    "realtime_verification": {
+      "status": "LIVE_FACT_CHECK_FOUND",
+      "badge_text": "Live Registry: Debunked Hoax ✖",
+      "fact_checker": "AFP Fact Check / Newschecker",
+      "review_rating": "False / Science Hoax",
+      "source_url": "https://factcheck.afp.com/pluto-planetary-gravity-free-power-hoax",
+      "api_used": "Real-Time Indian Fact-Check Knowledge Engine (Free)"
+    },
+    "timestamp": "2026-10-26T14:18:31.743826",
+    "source": "Live Real-Time User Query"
+  },
+  {
+    "id": "RT-2",
+    "text": "NASA warning sonnanga midnight phone use panna koodadhu cosmic rays attack varum",
+    "predicted_label": "Fake",
+    "chosen_model": "Google MuRIL",
+    "confidence": 99.3,
+    "muril_verdict": "Fake",
+    "indicbert_verdict": "Fake",
+    "realtime_verification": {
+      "status": "KNOWLEDGE_GROUNDING_FOUND",
+      "badge_text": "Wikipedia Knowledge Grounded ✔",
+      "fact_checker": "Wikipedia Knowledge Engine",
+      "review_rating": "Verified Entity: NASA",
+      "source_url": "https://en.wikipedia.org/wiki/NASA",
+      "api_used": "Wikipedia Real-Time REST API (Zero-Key)"
+    },
+    "timestamp": "2026-10-26T14:28:56.424928",
+    "source": "Live Real-Time User Query"
+  },
+  {
+    "id": "RT-3",
+    "text": "Breaking news: Anna University launches novel AI robotics workshop tomorrow morning",
+    "predicted_label": "Real",
+    "chosen_model": "Google MuRIL",
+    "confidence": 74.8,
+    "muril_verdict": "Real",
+    "indicbert_verdict": "Fake",
+    "realtime_verification": {
+      "status": "KNOWLEDGE_GROUNDING_FOUND",
+      "badge_text": "Wikipedia Knowledge Grounded ✔",
+      "fact_checker": "Wikipedia Knowledge Engine",
+      "review_rating": "Verified Entity: University",
+      "source_url": "https://en.wikipedia.org/wiki/University",
+      "api_used": "Wikipedia Real-Time REST API (Zero-Key)"
+    },
+    "timestamp": "2026-10-26T14:33:03.852820",
+    "source": "Live Real-Time User Query"
+  }
+]

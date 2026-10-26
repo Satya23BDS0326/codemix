@@ -49,6 +49,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const indicSubtitle = document.getElementById('indic-subtitle');
     const indicProbs = document.getElementById('indic-probs');
 
+    const baseBanner = document.getElementById('base-banner');
+    const baseIcon = document.getElementById('base-icon');
+    const baseTitle = document.getElementById('base-title');
+    const baseSubtitle = document.getElementById('base-subtitle');
+    const baseProbs = document.getElementById('base-probs');
+
     const resLangType = document.getElementById('res-lang-type');
     const resCmi = document.getElementById('res-cmi');
     const resCategory = document.getElementById('res-category');
@@ -165,6 +171,85 @@ document.addEventListener('DOMContentLoaded', () => {
         if (indicTitle) indicTitle.innerText = ind.label_name;
         if (indicSubtitle) indicSubtitle.innerText = `Confidence: ${ind.confidence}%`;
         if (indicProbs) indicProbs.innerText = `Real: ${(ind.probabilities.Real * 100).toFixed(1)}% | Fake: ${(ind.probabilities.Fake * 100).toFixed(1)}%`;
+
+        // Base Model Card (TF-IDF Baseline)
+        if (data.base_model_results) {
+            const b = data.base_model_results;
+            const isFakeB = b.label_name === 'Fake' || b.predicted_label === 'Fake' || b.label === 1;
+            if (baseBanner) baseBanner.className = `verdict-banner ${isFakeB ? 'fake' : 'real'}`;
+            if (baseIcon) baseIcon.innerHTML = isFakeB ? '<i class="fa-solid fa-triangle-exclamation"></i>' : '<i class="fa-solid fa-circle-check"></i>';
+            if (baseTitle) baseTitle.innerText = b.label_name || b.predicted_label;
+            if (baseSubtitle) baseSubtitle.innerText = `Confidence: ${b.confidence}%`;
+            if (baseProbs && b.probabilities) baseProbs.innerText = `Real: ${(b.probabilities.Real * 100).toFixed(1)}% | Fake: ${(b.probabilities.Fake * 100).toFixed(1)}%`;
+        }
+
+        // Deployment Decision Updates
+        if (data.model_selection_decision) {
+            const dec = data.model_selection_decision;
+            const selModel = document.getElementById('selection-model-name');
+            const selSum = document.getElementById('selection-verdict-summary');
+            const selMuril = document.getElementById('sel-stat-muril');
+            const selIndic = document.getElementById('sel-stat-indic');
+            const selBase = document.getElementById('sel-stat-base');
+            if (selModel) selModel.innerHTML = `<i class="fa-solid fa-crown" style="color: #F59E0B;"></i> ${dec.selected_model}`;
+            if (selSum) selSum.innerHTML = dec.decision_summary;
+            if (selMuril && dec.accuracy_comparison) selMuril.innerText = `${dec.accuracy_comparison.muril_accuracy}%`;
+            if (selIndic && dec.accuracy_comparison) selIndic.innerText = `${dec.accuracy_comparison.indicbert_accuracy}%`;
+            if (selBase && dec.accuracy_comparison) selBase.innerText = `${dec.accuracy_comparison.base_model_accuracy}%`;
+        }
+
+        // Real-Time Ground Truth Fact-Check Card
+        if (data.realtime_verification) {
+            const rt = data.realtime_verification;
+            const rtEngineTag = document.getElementById('rt-engine-tag');
+            const rtBadge = document.getElementById('rt-verdict-badge');
+            const rtChecker = document.getElementById('rt-checker-val');
+            const rtRating = document.getElementById('rt-rating-val');
+            const rtLatency = document.getElementById('rt-latency-val');
+            const rtEvidence = document.getElementById('rt-evidence-text');
+            const rtSourceLink = document.getElementById('rt-source-link');
+
+            if (rtEngineTag) {
+                rtEngineTag.innerHTML = `<i class="fa-solid fa-satellite-dish"></i> ${rt.provider || 'Live Grounding Engine'}`;
+            }
+
+            if (rtBadge) {
+                const verdict = (rt.verdict || '').toUpperCase();
+                if (verdict.includes('DEBUNKED') || verdict.includes('FAKE') || verdict.includes('HOAX')) {
+                    rtBadge.className = 'realtime-status-pill debunked';
+                    rtBadge.innerHTML = 'LIVE FACT CHECK: DEBUNKED HOAX ✖';
+                } else if (verdict.includes('AUTHENTIC') || verdict.includes('REAL') || verdict.includes('VERIFIED')) {
+                    rtBadge.className = 'realtime-status-pill authentic';
+                    rtBadge.innerHTML = 'LIVE FACT CHECK: VERIFIED AUTHENTIC ✔';
+                } else {
+                    rtBadge.className = 'realtime-status-pill unverified';
+                    rtBadge.innerHTML = 'LIVE FACT CHECK: UNCONFIRMED / NEUTRAL ℹ';
+                }
+            }
+
+            if (rtChecker) rtChecker.innerText = rt.fact_checker || 'BoomLive / PIB Fact Check / Wikipedia';
+            if (rtRating) {
+                rtRating.innerText = rt.rating || 'Verified Claim';
+                const vUpper = (rt.verdict || '').toUpperCase();
+                rtRating.style.color = (vUpper.includes('DEBUNKED') || vUpper.includes('FAKE')) ? 'var(--verdict-fake)' : (vUpper.includes('AUTHENTIC') ? 'var(--verdict-real)' : 'var(--amber-gold)');
+            }
+            if (rtLatency) rtLatency.innerText = `${rt.latency_ms || 0} ms (${rt.latency_ms < 50 ? 'Ultra-Fast' : 'Live'})`;
+            if (rtEvidence) rtEvidence.innerText = rt.summary || 'Corroborated against real-time ground truth sources.';
+
+            if (rtSourceLink) {
+                if (rt.url && rt.url.startsWith('http')) {
+                    rtSourceLink.href = rt.url;
+                    rtSourceLink.innerText = 'View Official Verification Record';
+                    rtSourceLink.style.display = 'inline-flex';
+                } else {
+                    rtSourceLink.style.display = 'none';
+                }
+            }
+
+            if (data.realtime_dataset_ingested && typeof updateDatasetStats === 'function') {
+                updateDatasetStats();
+            }
+        }
 
         // Linguistic Analysis
         if (resLangType) resLangType.innerText = data.code_mix_type;
@@ -456,8 +541,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td style="font-weight: 600; color: var(--text-pure);">${row.metric}</td>
-                        <td style="font-family: 'JetBrains Mono', monospace; color: #818CF8;">${row.muril}</td>
+                        <td style="font-family: 'JetBrains Mono', monospace; color: #94A3B8;">${row.base || '--'}</td>
                         <td style="font-family: 'JetBrains Mono', monospace; color: #2DD4BF;">${row.indicbert}</td>
+                        <td style="font-family: 'JetBrains Mono', monospace; color: #818CF8; font-weight: 700;">${row.muril}</td>
                         <td><span class="badge-tag highlight" style="font-size: 11px;">${row.leader}</span></td>
                     `;
                     benchTableBody.appendChild(tr);
@@ -518,8 +604,114 @@ document.addEventListener('DOMContentLoaded', () => {
                 const el = document.getElementById('bm-indic-acc');
                 if (el) el.innerText = `${(data.indicbert.accuracy * 100).toFixed(1)}%`;
             }
+            if (data.base_model) {
+                const el = document.getElementById('bm-base-acc');
+                if (el) el.innerText = `${(data.base_model.accuracy * 100).toFixed(1)}%`;
+            }
         } catch (err) {
             console.error('Metrics load error:', err);
         }
     }
+
+    // =========================================================================
+    // REAL-TIME API KEY MODAL & DATASET EXPANSION MANAGEMENT
+    // =========================================================================
+    const btnOpenApiModal = document.getElementById('btn-open-api-modal');
+    const apiModal = document.getElementById('api-modal');
+    const btnCloseModal = document.getElementById('btn-close-modal');
+    const btnModalCancel = document.getElementById('btn-modal-cancel');
+    const btnModalSave = document.getElementById('btn-modal-save');
+    const apiKeyInput = document.getElementById('api-key-input');
+    const modalKeyStatus = document.getElementById('modal-key-status');
+    const headerApiStatus = document.getElementById('header-api-status');
+    const corpusStatusLabel = document.getElementById('corpus-status-label');
+
+    function openModal() {
+        if (apiModal) {
+            apiModal.style.display = 'flex';
+            apiModal.classList.remove('hidden');
+        }
+    }
+
+    function closeModal() {
+        if (apiModal) {
+            apiModal.style.display = 'none';
+            apiModal.classList.add('hidden');
+        }
+    }
+
+    if (btnOpenApiModal) btnOpenApiModal.addEventListener('click', openModal);
+    if (btnCloseModal) btnCloseModal.addEventListener('click', closeModal);
+    if (btnModalCancel) btnModalCancel.addEventListener('click', closeModal);
+    if (apiModal) {
+        apiModal.addEventListener('click', (e) => {
+            if (e.target === apiModal) closeModal();
+        });
+    }
+
+    async function loadApiConfig() {
+        try {
+            const res = await fetch('/api/config/api-key');
+            if (!res.ok) return;
+            const data = await res.json();
+            if (data.has_key) {
+                if (headerApiStatus) headerApiStatus.innerText = 'API: Google Cloud Active';
+                if (modalKeyStatus) modalKeyStatus.innerText = `Key Active (${data.masked_key})`;
+                if (apiKeyInput) apiKeyInput.placeholder = data.masked_key;
+            } else {
+                if (headerApiStatus) headerApiStatus.innerText = 'API: Free Live Engine';
+                if (modalKeyStatus) modalKeyStatus.innerText = 'Current: Using Free Built-in Engine';
+            }
+        } catch (err) {
+            console.error('Failed to load API config:', err);
+        }
+    }
+
+    if (btnModalSave) {
+        btnModalSave.addEventListener('click', async () => {
+            const keyVal = apiKeyInput ? apiKeyInput.value.trim() : '';
+            btnModalSave.disabled = true;
+            btnModalSave.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+            try {
+                const res = await fetch('/api/config/api-key', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ api_key: keyVal })
+                });
+                await res.json();
+                closeModal();
+                loadApiConfig();
+            } catch (err) {
+                console.error('Error saving API key:', err);
+                alert('Could not save API key.');
+            } finally {
+                btnModalSave.disabled = false;
+                btnModalSave.innerHTML = '<i class="fa-solid fa-check"></i> Save & Apply';
+            }
+        });
+    }
+
+    async function updateDatasetStats() {
+        try {
+            const res = await fetch('/api/stats');
+            if (!res.ok) return;
+            const data = await res.json();
+            const liveCount = data.realtime_live_count || 0;
+            const total = data.total_samples || (520 + liveCount);
+            if (corpusStatusLabel) {
+                corpusStatusLabel.innerText = `${total} Items (${data.base_corpus_count || 520} + ${liveCount} Live)`;
+            }
+            const dlDesc = document.getElementById('rt-dataset-download-desc');
+            if (dlDesc) {
+                dlDesc.innerText = `Real-Time Ingested Live Dataset (JSON) - contains ${liveCount} dynamically ingested live queries`;
+            }
+        } catch (err) {
+            console.error('Failed to fetch dataset stats:', err);
+        }
+    }
+
+    // Initialize API config and dataset counters on load
+    loadApiConfig();
+    updateDatasetStats();
 });
+

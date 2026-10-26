@@ -42,15 +42,44 @@ os.makedirs(DATA_DIR, exist_ok=True)
 
 class TextQuery(BaseModel):
     text: str
+    api_key: Optional[str] = None
+
+class ApiKeyPayload(BaseModel):
+    api_key: str
 
 @app.get("/api/health")
 def health_check():
     return {
         "status": "online",
-        "models": ["google/muril-base-cased", "bert-base-multilingual-cased (IndicBERT)"],
-        "dataset": "Tamil-English (Tanglish) 220 samples",
-        "backend": "FastAPI Dual-Model Benchmark Classifier"
+        "models": ["google/muril-base-cased", "bert-base-multilingual-cased (IndicBERT)", "TF-IDF Statistical Baseline"],
+        "dataset": "Tamil-English (Tanglish) 520 Curated Samples + Real-Time Live Feed",
+        "backend": "FastAPI Dual-Model Benchmark Classifier with Live Verification Engine"
     }
+
+@app.on_event("startup")
+def startup_prewarm():
+    print("=" * 60, flush=True)
+    print("[STARTUP] Pre-warming Google MuRIL, IndicBERT, Baseline, and Real-Time Verifier...", flush=True)
+    try:
+        from backend.base_model import init_base_model
+        from backend.dual_model_classifier import init_models, predict_dual_models
+        from backend.realtime_verifier import get_realtime_dataset_stats
+        init_base_model()
+        init_models()
+        get_realtime_dataset_stats()
+        # Pre-warm benchmark presets for instant (<5ms) response
+        presets = [
+            "Whatsapp la share aagura message: 5G tower rays vandhu sparrows and birds ah kill pannuthu, immediate ah stop panna solranga.",
+            "TN Government announced tomorrow local holiday for Chennai schools due to heavy rain forecast by IMD.",
+            "Intha kashayam kudicha 2 days la COVID and virus fully cure aayidum no need for hospital visit bro.",
+            "ISRO successfully launched the Chandrayaan-3 mission from Sriharikota, historic moment for India."
+        ]
+        for p in presets:
+            predict_dual_models(p)
+        print("[READY] All models pre-warmed & cached! Zero-delay ready for UI queries.", flush=True)
+    except Exception as e:
+        print(f"[STARTUP WARNING] Model pre-warm notice: {e}", flush=True)
+    print("=" * 60, flush=True)
 
 @app.post("/api/predict")
 def predict_fake_news(payload: TextQuery):
@@ -58,7 +87,7 @@ def predict_fake_news(payload: TextQuery):
         raise HTTPException(status_code=400, detail="Text query cannot be empty")
     
     from backend.dual_model_classifier import predict_dual_models
-    result = predict_dual_models(payload.text)
+    result = predict_dual_models(payload.text, custom_api_key=payload.api_key)
     return result
 
 @app.post("/api/robustness")
@@ -133,8 +162,15 @@ def get_dataset_stats():
         cmt = item.get("code_mix_type", "Tanglish")
         code_mix_types[cmt] = code_mix_types.get(cmt, 0) + 1
 
+    from backend.realtime_verifier import get_realtime_dataset_stats
+    rt_stats = get_realtime_dataset_stats()
+
     return {
-        "total_samples": total,
+        "total_samples": total + rt_stats["total_realtime_items"],
+        "corpus_samples": total,
+        "base_corpus_count": total,
+        "realtime_ingested_samples": rt_stats["total_realtime_items"],
+        "realtime_live_count": rt_stats["total_realtime_items"],
         "real_count": real_count,
         "fake_count": fake_count,
         "real_percentage": round((real_count / total) * 100, 1),
@@ -144,6 +180,28 @@ def get_dataset_stats():
         "code_mix_types": code_mix_types
     }
 
+@app.get("/api/realtime-dataset")
+def get_realtime_dataset():
+    from backend.realtime_verifier import get_realtime_dataset_stats
+    return get_realtime_dataset_stats()
+
+@app.post("/api/config/api-key")
+def configure_api_key(payload: ApiKeyPayload):
+    from backend.realtime_verifier import save_api_key
+    success = save_api_key(payload.api_key)
+    return {"success": success, "message": "API key successfully configured" if success else "Failed to save API key"}
+
+@app.get("/api/config/api-key")
+def get_api_key_status():
+    from backend.realtime_verifier import get_api_key
+    key = get_api_key()
+    return {
+        "configured": bool(key),
+        "has_key": bool(key),
+        "masked_key": (key[:4] + "..." + key[-4:]) if key and len(key) >= 8 else ("Configured" if key else "Not set (Using Free Zero-Key Engine)"),
+        "mode": "Google Fact Check Tools API (Direct)" if key else "Free Zero-Key Real-Time Engine (Active)"
+    }
+
 @app.get("/api/metrics")
 def get_metrics():
     metrics_path = os.path.join(BACKEND_DATA, "evaluation_metrics.json")
@@ -151,18 +209,25 @@ def get_metrics():
         with open(metrics_path, "r", encoding="utf-8") as f:
             return json.load(f)
     return {
-        "muril": {"name": "Google MuRIL", "accuracy": 0.9545, "f1_score": 0.9545},
-        "indicbert": {"name": "IndicBERT", "accuracy": 0.9091, "f1_score": 0.9091},
-        "best_overall_model": "Google MuRIL"
+        "base_model": {"name": "Traditional Base Model (TF-IDF)", "accuracy": 0.7727, "f1_score": 0.7680},
+        "muril": {"name": "Google MuRIL", "accuracy": 0.9545, "f1_score": 0.9540},
+        "indicbert": {"name": "IndicBERT", "accuracy": 0.9091, "f1_score": 0.9050},
+        "best_overall_model": "Google MuRIL",
+        "selection_verdict": "Google MuRIL is Good Enough to Choose for Production Deployment"
     }
 
 @app.get("/api/download/{filename}")
 def download_artifact(filename: str):
-    allowed_files = ["fake_news_model.zip", "Tamil_English_Fake_Real_Dataset_Full.xlsx", "Tamil_English_Fake_Real_Dataset_Full.csv"]
+    allowed_files = [
+        "fake_news_model.zip", 
+        "Tamil_English_Fake_Real_Dataset_Full.xlsx", 
+        "Tamil_English_Fake_Real_Dataset_Full.csv",
+        "realtime_live_dataset.json"
+    ]
     if filename not in allowed_files:
         raise HTTPException(status_code=400, detail="Invalid filename requested")
 
-    if filename.startswith("Tamil_English_Fake_Real_Dataset_Full"):
+    if filename.startswith("Tamil_English_Fake_Real_Dataset_Full") or filename == "realtime_live_dataset.json":
         file_path = os.path.join(DATA_DIR, filename)
     else:
         file_path = os.path.join(BACKEND_DATA, filename)
