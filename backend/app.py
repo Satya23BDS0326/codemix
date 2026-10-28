@@ -16,11 +16,39 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("=" * 60, flush=True)
+    print("[STARTUP] Pre-warming Google MuRIL, IndicBERT, Baseline, and Real-Time Verifier...", flush=True)
+    try:
+        from backend.base_model import init_base_model
+        from backend.dual_model_classifier import init_models, predict_dual_models
+        from backend.realtime_verifier import get_realtime_dataset_stats
+        init_base_model()
+        init_models()
+        get_realtime_dataset_stats()
+        # Pre-warm benchmark presets for instant (<5ms) response
+        presets = [
+            "Whatsapp la share aagura message: 5G tower rays vandhu sparrows and birds ah kill pannuthu, immediate ah stop panna solranga.",
+            "TN Government announced tomorrow local holiday for Chennai schools due to heavy rain forecast by IMD.",
+            "Intha kashayam kudicha 2 days la COVID and virus fully cure aayidum no need for hospital visit bro.",
+            "ISRO successfully launched the Chandrayaan-3 mission from Sriharikota, historic moment for India."
+        ]
+        for p in presets:
+            predict_dual_models(p)
+        print("[READY] All models pre-warmed & cached! Zero-delay ready for UI queries.", flush=True)
+    except Exception as e:
+        print(f"[STARTUP WARNING] Model pre-warm notice: {e}", flush=True)
+    print("=" * 60, flush=True)
+    yield
 
 app = FastAPI(
     title="CodeMix Dual Model Benchmarking System (MuRIL vs IndicBERT)",
     description="Tamil-English (Tanglish) Fake News Detection with Side-by-Side MuRIL vs IndicBERT Comparison",
-    version="4.0.0"
+    version="4.0.0",
+    lifespan=lifespan
 )
 
 app.add_middleware(
@@ -55,31 +83,6 @@ def health_check():
         "dataset": "Tamil-English (Tanglish) 520 Curated Samples + Real-Time Live Feed",
         "backend": "FastAPI Dual-Model Benchmark Classifier with Live Verification Engine"
     }
-
-@app.on_event("startup")
-def startup_prewarm():
-    print("=" * 60, flush=True)
-    print("[STARTUP] Pre-warming Google MuRIL, IndicBERT, Baseline, and Real-Time Verifier...", flush=True)
-    try:
-        from backend.base_model import init_base_model
-        from backend.dual_model_classifier import init_models, predict_dual_models
-        from backend.realtime_verifier import get_realtime_dataset_stats
-        init_base_model()
-        init_models()
-        get_realtime_dataset_stats()
-        # Pre-warm benchmark presets for instant (<5ms) response
-        presets = [
-            "Whatsapp la share aagura message: 5G tower rays vandhu sparrows and birds ah kill pannuthu, immediate ah stop panna solranga.",
-            "TN Government announced tomorrow local holiday for Chennai schools due to heavy rain forecast by IMD.",
-            "Intha kashayam kudicha 2 days la COVID and virus fully cure aayidum no need for hospital visit bro.",
-            "ISRO successfully launched the Chandrayaan-3 mission from Sriharikota, historic moment for India."
-        ]
-        for p in presets:
-            predict_dual_models(p)
-        print("[READY] All models pre-warmed & cached! Zero-delay ready for UI queries.", flush=True)
-    except Exception as e:
-        print(f"[STARTUP WARNING] Model pre-warm notice: {e}", flush=True)
-    print("=" * 60, flush=True)
 
 @app.post("/api/predict")
 def predict_fake_news(payload: TextQuery):
@@ -245,3 +248,12 @@ def read_root():
     if os.path.exists(index_html):
         return FileResponse(index_html)
     return {"message": "CodeMix Dual Model API running."}
+
+if __name__ == "__main__":
+    import uvicorn
+    print("\n" + "=" * 60)
+    print("  CodeMix Dual-Model Misinformation Intelligence System")
+    print("  Serving at: http://127.0.0.1:8000")
+    print("=" * 60 + "\n", flush=True)
+    uvicorn.run("backend.app:app", host="127.0.0.1", port=8000, reload=True)
+

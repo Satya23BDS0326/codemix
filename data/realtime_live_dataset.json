@@ -55,5 +55,24 @@
     },
     "timestamp": "2026-10-26T14:33:03.852820",
     "source": "Live Real-Time User Query"
+  },
+  {
+    "id": "RT-4",
+    "text": "Whatsapp la share aagura message: 5G tower rays vandhu sparrows and birds ah kill pannuthu, immediate ah stop panna solranga.",
+    "predicted_label": "Fake",
+    "chosen_model": "Google MuRIL",
+    "confidence": 99.8,
+    "muril_verdict": "Fake",
+    "indicbert_verdict": "Fake",
+    "realtime_verification": {
+      "status": "LIVE_FACT_CHECK_FOUND",
+      "badge_text": "Live Registry: Debunked Hoax ✖",
+      "fact_checker": "BoomLive / PIB Fact Check",
+      "review_rating": "False / Fabricated",
+      "source_url": "https://www.boomlive.in/fact-check/5g-radiation-birds-deaths-fact-check",
+      "api_used": "Real-Time Indian Fact-Check Knowledge Engine (Free)"
+    },
+    "timestamp": "2026-10-26T14:44:48.457537",
+    "source": "Live Real-Time User Query"
   }
 ]
